@@ -5,6 +5,102 @@
 let toolsConfig = null;
 
 
+
+
+
+/* =====================================================
+   RENDER PANEL
+===================================================== */
+
+function renderPanel() {
+
+    const container =
+        document.getElementById("terrainPanelContent");
+
+    if (!container) {
+        console.error("terrainPanelContent not found");
+        return;
+    }
+
+    container.innerHTML = "";
+
+    /* HEADER */
+
+    const header = document.createElement("div");
+
+    header.className = "panel-header";
+
+    header.innerHTML = `
+        <div class="panel-brand">
+
+            <div class="brand-mark">
+                ${toolsConfig.panel.icon}
+            </div>
+
+            <div class="brand-text">
+
+                <div class="panel-title">
+                    ${toolsConfig.panel.title}
+                </div>
+
+                <div class="panel-subtitle">
+                    ${toolsConfig.panel.subtitle}
+                </div>
+
+            </div>
+
+        </div>
+
+        <button class="panel-menu" title="Terrain tools menu">
+            ⋮
+        </button>
+    `;
+
+    container.appendChild(header);
+
+
+    /* SECTIONS */
+
+    toolsConfig.sections.forEach(section => {
+
+        const sectionElement =
+            document.createElement("section");
+
+        sectionElement.className =
+            "control-section";
+
+        sectionElement.innerHTML = `
+
+            <div class="section-title"
+                 onclick="toggleSection(this)">
+
+                <div class="section-title-left">
+
+                    <span class="section-indicator"></span>
+
+                    <span class="section-icon">
+                        ${section.icon}
+                    </span>
+
+                    <span class="section-name">
+                        ${section.title}
+                    </span>
+
+                </div>
+
+                <span class="arrow">▾</span>
+
+            </div>
+
+            <div class="section-content"></div>
+        `;
+
+        container.appendChild(sectionElement);
+
+    });
+
+}
+
 /* =====================================================
    LOAD JSON
 ===================================================== */
@@ -35,8 +131,24 @@ async function loadTools() {
 
 
 /* =====================================================
-   RENDER PANEL
+   SECTION DROPDOWN
 ===================================================== */
+
+function toggleSection(header) {
+
+    header
+        .closest(".control-section")
+        .classList
+        .toggle("open");
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+loadTools();
 
 function renderPanel() {
 
@@ -83,21 +195,14 @@ function renderPanel() {
         const content =
             sectionElement.querySelector(".section-content");
 
-       section.items.forEach(item => {
+        section.items.forEach(item => {
 
-    if (item.type === "button") {
-        renderButton(content, item);
-    }
+            if (item.type === "button") {
+                renderButton(content, item);
+            }
 
-    if (item.type === "mode") {
-        renderMode(content, item);
-    }
+        });
 
-    if (item.type === "number") {
-        renderNumber(content, item);
-    }
-
-});
         container.appendChild(sectionElement);
     });
 }
@@ -146,141 +251,6 @@ function renderButton(container, item) {
 
     container.appendChild(button);
 }
-
-
-
-function renderMode(container, item) {
-
-    const button =
-        document.createElement("button");
-
-    button.className = "mode-button";
-
-    button.dataset.action =
-        item.action || "";
-
-    button.innerHTML = `
-        <span class="mode-icon">
-            ${item.icon || ""}
-        </span>
-
-        <span>
-            ${item.label}
-        </span>
-    `;
-
-    button.addEventListener("click", () => {
-
-        selectBrushMode(button);
-
-    });
-
-    container.appendChild(button);
-}
-
-
-
-function renderNumber(container, item) {
-
-    const control =
-        document.createElement("div");
-
-    control.className = "value-control";
-
-    const valueId =
-        item.id + "Value";
-
-    control.innerHTML = `
-        <div class="value-info">
-
-            <span class="value-label">
-                ${item.label}
-            </span>
-
-            <span
-                class="value-number"
-                id="${valueId}">
-                ${item.value} ${item.unit || ""}
-            </span>
-
-        </div>
-
-        <div class="mini-stepper">
-
-            <button class="step-minus">
-                −
-            </button>
-
-            <button class="step-plus">
-                +
-            </button>
-
-        </div>
-    `;
-
-    const minus =
-        control.querySelector(".step-minus");
-
-    const plus =
-        control.querySelector(".step-plus");
-
-
-    minus.addEventListener("click", () => {
-
-        changeNumber(item, -item.step);
-
-    });
-
-
-    plus.addEventListener("click", () => {
-
-        changeNumber(item, item.step);
-
-    });
-
-
-    container.appendChild(control);
-}
-
-function changeNumber(item, amount) {
-
-    item.value =
-        Number(item.value) + Number(amount);
-
-    const valueElement =
-        document.getElementById(item.id + "Value");
-
-    if (!valueElement) return;
-
-    valueElement.textContent =
-        `${item.value} ${item.unit || ""}`;
-
-    console.log(
-        item.id,
-        item.value
-    );
-}
-
-/* =====================================================
-   SECTION DROPDOWN
-===================================================== */
-
-function toggleSection(header) {
-
-    header
-        .closest(".control-section")
-        .classList
-        .toggle("open");
-
-}
-
-
-/* =====================================================
-   START
-===================================================== */
-
-loadTools();
-
 
 /* =====================================================
    GLOBAL

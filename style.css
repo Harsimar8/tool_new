@@ -13,10 +13,10 @@
 
     --blue: #3b9cff;
     --blue-light: #7ac2ff;
-    --blue-bg: rgba(59, 156, 255, .13);
+    
 
     --green: #43dc86;
-    --danger: #ef6262;
+    
 
     --text: #f4f7fb;
     --secondary: #c4ced9;
@@ -38,8 +38,6 @@ body {
     background: transparent;
     -webkit-font-smoothing: antialiased;
 }
-
-
 /* PANEL */
 
 .terrain-panel {
@@ -58,18 +56,25 @@ body {
         0 5px 15px rgba(0, 0, 0, .3);
     backdrop-filter: blur(18px);
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, .2) transparent;
+    scrollbar-color: rgba(130, 150, 170, .35) transparent;
 }
 
 .terrain-panel::-webkit-scrollbar {
-    width: 5px;
+    width: 4px;
+}
+
+.terrain-panel::-webkit-scrollbar-track {
+    background: transparent;
 }
 
 .terrain-panel::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, .18);
+    background: rgba(130, 150, 170, .35);
     border-radius: 10px;
 }
 
+.terrain-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(130, 150, 170, .6);
+}
 
 /* HEADER */
 
@@ -165,7 +170,6 @@ body {
     border-color: var(--border);
 }
 
-
 /* SECTIONS */
 
 .control-section {
@@ -196,42 +200,6 @@ body {
     align-items: center;
     gap: 7px;
 }
-
-.section-icon {
-    width: 22px;
-    height: 22px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    color: #8b9aaa;
-    background: rgba(255, 255, 255, .045);
-
-    border: 1px solid rgba(255, 255, 255, .07);
-    border-radius: 5px;
-
-    font-size: 11px;
-    flex-shrink: 0;
-
-    transition:
-        color .18s ease,
-        background .18s ease,
-        border-color .18s ease;
-}
-
-.section-title:hover .section-icon {
-    color: var(--blue-light);
-    background: rgba(59, 156, 255, .08);
-    border-color: rgba(59, 156, 255, .22);
-}
-
-.control-section.open .section-icon {
-    color: var(--blue-light);
-    background: rgba(59, 156, 255, .10);
-    border-color: rgba(59, 156, 255, .28);
-}
-
 
 .section-indicator {
     width: 3px;
@@ -276,7 +244,6 @@ body {
     color: var(--blue-light);
 }
 
-
 /* DROPDOWN CONTENT */
 
 .section-content {
@@ -299,7 +266,6 @@ body {
     border-bottom: 1px solid rgba(59, 156, 255, .16);
     border-radius: 0 0 7px 7px;
 }
-
 
 /* BUTTONS */
 
@@ -392,10 +358,6 @@ body {
     grid-column: 1 / -1;
 }
 
-.button-main {
-    color: inherit;
-}
-
 .button-value,
 .button-icon,
 .action-icon,
@@ -407,9 +369,7 @@ body {
     font-weight: 700;
 }
 
-
 /* BRUSH MODES */
-
 .tool-mode-grid {
     margin-bottom: 7px;
 }
@@ -419,8 +379,6 @@ body {
     font-size: 9.5px;
     font-weight: 600;
 }
-
-
 /* VALUE CONTROLS */
 
 .value-control {
@@ -450,9 +408,7 @@ body {
     font-weight: 600;
 }
 
-
 /* STEPPERS */
-
 .mini-stepper {
     display: flex;
     gap: 4px;
@@ -480,9 +436,7 @@ body {
     color: white;
 }
 
-
 /* DIVIDER */
-
 .control-divider {
     height: 1px;
     margin: 8px 0;
@@ -491,10 +445,7 @@ body {
             rgba(255, 255, 255, .1),
             transparent);
 }
-
-
 /* INPUTS */
-
 .field-control {
     margin-top: 8px;
 }
@@ -543,9 +494,7 @@ body {
     font-size: 14px;
 }
 
-
 /* RESET */
-
 .reset-button {
     width: 100%;
     height: 34px;
@@ -570,12 +519,7 @@ body {
     border-color: rgba(239, 98, 98, .4);
 }
 
-/* =====================================================
-   SYMBOL PICKER
-===================================================== */
-
-
-
+/*SYMBOL PICKER*/
 .symbol-picker {
     position: fixed;
 
@@ -596,18 +540,12 @@ body {
     overflow: hidden;
 }
 
-
 /* Popup becomes visible */
-
 .symbol-picker.show {
     display: block;
 }
 
-
-/* =====================================================
-   POPUP HEADER
-===================================================== */
-
+/*POPUP HEADER*/
 .symbol-picker-header {
 
     height: 44px;
@@ -633,9 +571,7 @@ body {
     letter-spacing: 0.8px;
 }
 
-
 /* Close button */
-
 .symbol-picker-close {
 
     width: 28px;
@@ -655,7 +591,6 @@ body {
     cursor: pointer;
 }
 
-
 .symbol-picker-close:hover {
 
     background: #252c34;
@@ -663,11 +598,7 @@ body {
     color: #ffffff;
 }
 
-
-/* =====================================================
-   SYMBOL GRID
-===================================================== */
-
+/*SYMBOL GRID*/
 .symbol-picker-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -680,11 +611,7 @@ body {
     overflow-y: auto;
 }
 
-
-/* =====================================================
-   INDIVIDUAL SYMBOL CARD
-===================================================== */
-
+/*INDIVIDUAL SYMBOL CARD*/
 .symbol-subtype {
     min-height: 72px;
 
@@ -711,15 +638,11 @@ body {
         opacity 0.15s ease;
 }
 
-
 .symbol-subtype:hover {
     background: rgba(59, 156, 255, 0.08);
 }
 
-/* =====================================================
-   MILSYMBOL SVG CONTAINER
-===================================================== */
-
+/*MILSYMBOL SVG CONTAINER*/
 .symbol-subtype-icon {
     width: 56px;
     height: 50px;
@@ -729,17 +652,12 @@ body {
     justify-content: center;
 }
 
-
 .symbol-subtype-icon svg {
     width: 50px;
     height: 50px;
 }
 
-
-/* =====================================================
-   SYMBOL NAME
-===================================================== */
-
+/*SYMBOL NAME*/
 .symbol-subtype-name { 
     width: 100%; 
     text-align: center; 
@@ -750,20 +668,24 @@ body {
     color: #aeb9c4; 
 }
 
-
-/* =====================================================
-   SELECTED SYMBOL
-===================================================== */
-
-
+/*SELECTED SYMBOL*/
 .symbol-subtype.selected {
-    background: rgba(59, 156, 255, 0.12);
-
-    border: 1px solid rgba(59, 156, 255, 0.55);
+    background: rgba(59, 156, 255, .10);
+    border: 1px solid rgba(122, 194, 255, .55);
 
     box-shadow:
-        inset 0 0 0 1px rgba(59, 156, 255, 0.15),
-        0 0 10px rgba(59, 156, 255, 0.08);
+        inset 0 0 12px rgba(59, 156, 255, .08),
+        0 0 14px rgba(59, 156, 255, .12);
+
+    transform: translateY(-1px);
+}
+
+.symbol-subtype.selected .symbol-subtype-name {
+    color: #e7f3ff;
+}
+
+.symbol-subtype.selected .symbol-subtype-icon {
+    filter: drop-shadow(0 0 5px rgba(122, 194, 255, .45));
 }
 
 .symbol-category-grid {
@@ -774,11 +696,11 @@ body {
 
 
 .symbol-category-button {
-    height: 36px;
+    height: 34px;
 
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 
     padding: 6px 9px;
 
@@ -788,8 +710,8 @@ body {
 
     color: #d9e2ec;
 
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 11px;
+    font-weight: 570;
 
     cursor: pointer;
 
@@ -810,21 +732,20 @@ body {
     transform: scale(0.98);
 }
 
-
 .symbol-category-icon {
-    width: 12px;
-    height: 12px;
+    width: 20px;
+    height: 20px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    background: rgba(44, 210, 230, .06);
-border: 1px solid rgba(44, 210, 230, .32);
+    background: rgba(44, 210, 230, .04);
+    border: 1px solid rgba(44, 210, 230, .22);
     border-radius: 5px;
 
-    font-size: 17px;
-    color: #dce7f2;
+    font-size: 13px;
+    color: #91a0ae;
 
     flex-shrink: 0;
 }
@@ -841,7 +762,6 @@ border: 1px solid rgba(44, 210, 230, .32);
 
 
 /* MASK */
-
 #maskButton.mask-on {
     color: #75e7a3;
     background: rgba(67, 220, 134, .12);
@@ -851,7 +771,6 @@ border: 1px solid rgba(44, 210, 230, .32);
 
 
 /* STATUS */
-
 .panel-status {
     height: 29px;
     display: flex;
@@ -875,7 +794,6 @@ border: 1px solid rgba(44, 210, 230, .32);
 
 
 /* CENTER NOTIFICATION */
-
 .tool-notification {
     position: fixed !important;
 
@@ -911,18 +829,13 @@ border: 1px solid rgba(44, 210, 230, .32);
 
     opacity: 0;
 
-    transition:
-        opacity .2s ease,
-        transform .2s ease;
+    transition: .2s;
 }
 
 .tool-notification.show {
     opacity: 1;
-
-    transform:
-        translate(-50%, -50%) !important;
+    transform: translate(-50%, -50%) !important;
 }
-
 
 .tool-notification small {
     display: block;
@@ -937,9 +850,7 @@ border: 1px solid rgba(44, 210, 230, .32);
     font-size: 13px;
 }
 
-
 /* RESPONSIVE */
-
 @media (max-width: 600px) {
 
     .terrain-panel {
@@ -962,7 +873,6 @@ border: 1px solid rgba(44, 210, 230, .32);
 }
 
 /* CUSTOM PANEL RESIZE */
-
 .terrain-panel::after {
     content: "";
 

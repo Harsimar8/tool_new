@@ -242,25 +242,6 @@ function renderNumber(container, item) {
     container.appendChild(control);
 }
 
-function changeNumber(item, amount) {
-
-    item.value =
-        Number(item.value) + Number(amount);
-
-    const valueElement =
-        document.getElementById(item.id + "Value");
-
-    if (!valueElement) return;
-
-    valueElement.textContent =
-        `${item.value} ${item.unit || ""}`;
-
-    console.log(
-        item.id,
-        item.value
-    );
-}
-
 /* =====================================================
    SECTION DROPDOWN
 ===================================================== */

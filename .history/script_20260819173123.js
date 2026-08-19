@@ -83,7 +83,7 @@ function renderPanel() {
         const content =
             sectionElement.querySelector(".section-content");
 
-       section.items.forEach(item => {
+        section.items.forEach(item => {
 
     if (item.type === "button") {
         renderButton(content, item);
@@ -93,11 +93,8 @@ function renderPanel() {
         renderMode(content, item);
     }
 
-    if (item.type === "number") {
-        renderNumber(content, item);
-    }
-
 });
+
         container.appendChild(sectionElement);
     });
 }
@@ -178,88 +175,6 @@ function renderMode(container, item) {
     container.appendChild(button);
 }
 
-
-
-function renderNumber(container, item) {
-
-    const control =
-        document.createElement("div");
-
-    control.className = "value-control";
-
-    const valueId =
-        item.id + "Value";
-
-    control.innerHTML = `
-        <div class="value-info">
-
-            <span class="value-label">
-                ${item.label}
-            </span>
-
-            <span
-                class="value-number"
-                id="${valueId}">
-                ${item.value} ${item.unit || ""}
-            </span>
-
-        </div>
-
-        <div class="mini-stepper">
-
-            <button class="step-minus">
-                −
-            </button>
-
-            <button class="step-plus">
-                +
-            </button>
-
-        </div>
-    `;
-
-    const minus =
-        control.querySelector(".step-minus");
-
-    const plus =
-        control.querySelector(".step-plus");
-
-
-    minus.addEventListener("click", () => {
-
-        changeNumber(item, -item.step);
-
-    });
-
-
-    plus.addEventListener("click", () => {
-
-        changeNumber(item, item.step);
-
-    });
-
-
-    container.appendChild(control);
-}
-
-function changeNumber(item, amount) {
-
-    item.value =
-        Number(item.value) + Number(amount);
-
-    const valueElement =
-        document.getElementById(item.id + "Value");
-
-    if (!valueElement) return;
-
-    valueElement.textContent =
-        `${item.value} ${item.unit || ""}`;
-
-    console.log(
-        item.id,
-        item.value
-    );
-}
 
 /* =====================================================
    SECTION DROPDOWN
