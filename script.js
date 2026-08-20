@@ -1,153 +1,526 @@
-
-import "./render.js";
-
+import ms from "milsymbol";
 
 /* =====================================================
-   SECTION DROPDOWN
+   MILITARY SYMBOLS
 ===================================================== */
+const symbolVariants = {
 
-document.addEventListener("click", event => {
+    Radar: [
 
-    /* ---------------------------------------------
-       SECTION OPEN / CLOSE
-    --------------------------------------------- */
+        {
+            name: "Ground Surveillance Radar",
+            sidc: "10035000001103000800"
+        },
 
-    const sectionTitle =
-        event.target.closest(".section-title");
+        {
+            name: "Early Warning Radar",
+            sidc: "10035000001103001600"
+        },
 
-    if (sectionTitle) {
+        {
+            name: "Fire Control Radar",
+            sidc: "10035000001103001700"
+        },
 
-        const section =
-            sectionTitle.closest(".control-section");
-
-        if (section) {
-            section.classList.toggle("open");
+        {
+            name: "Air Defense Radar",
+            sidc: "10035000001103000100"
         }
 
+    ],
+
+
+    Tank: [
+
+        {
+            name: "Tank",
+            sidc: "10031500001202000000"
+        },
+
+        {
+            name: "Light Tank",
+            sidc: "10031500001202010000"
+        },
+
+        {
+            name: "Medium Tank",
+            sidc: "10031500001202020000"
+        },
+
+        {
+            name: "Heavy Tank",
+            sidc: "10031500001202030000"
+        }
+
+    ],
+
+
+    Missile: [
+
+        {
+            name: "Missile",
+            sidc: "10030200001100000000"
+        },
+
+        {
+            name: "Surface-to-Surface Missile",
+            sidc: "10030200001100000202"
+        },
+
+        {
+            name: "Surface-to-Air Missile",
+            sidc: "10030200001100000201"
+        },
+
+        {
+            name: "Air-to-Surface Missile",
+            sidc: "10030200001100000102"
+        }
+
+    ],
+
+
+    SAM: [
+
+        {
+            name: "Surface-to-Air Missile",
+            sidc: "10030200001100000201"
+        },
+
+        {
+            name: "Short Range SAM",
+            sidc: "10031500001111010000"
+        },
+
+        {
+            name: "Medium Air Defense Missile Launcher",
+            sidc: "10031500001111040000"
+        },
+
+        {
+            name: "S-400 / SA-21",
+            sidc: "10031500001111030000"
+        }
+
+    ],
+
+
+    Bomber: [
+
+        {
+            name: "Bomber",
+            sidc: "10030100001101030000"
+        },
+
+        {
+            name: "Fighter-Bomber",
+            sidc: "10030100001101050000"
+        },
+
+        {
+            name: "Attack / Strike Aircraft",
+            sidc: "10030100001101020000"
+        },
+
+        {
+            name: "Reconnaissance Aircraft",
+            sidc: "10030100001101110000"
+        }
+
+    ]
+
+};
+function openSymbolPicker(event, category) {
+
+    event.stopPropagation();
+
+    const picker =
+        document.getElementById("symbolPicker");
+
+    const title =
+        document.getElementById("symbolPickerTitle");
+
+    const grid =
+        document.getElementById("symbolPickerGrid");
+
+    if (!picker || !title || !grid) {
+        console.error("Symbol picker elements not found");
         return;
     }
 
+    console.log("Opening symbol picker:", category);
 
-    /* ---------------------------------------------
-       TOOL SELECTION
-    --------------------------------------------- */
+    title.textContent = category.toUpperCase();
 
-    const button =
-        event.target.closest(".tool-button, .mode-button");
+    grid.innerHTML = "";
 
-    if (!button) return;
+    const variants =
+        symbolVariants[category] || [];
 
-    const section =
-        button.closest(".control-section");
+    variants.forEach(variant => {
 
-    if (!section) return;
+        const button =
+            document.createElement("button");
 
-    /* ---------------------------------------------
-   MASK TOGGLE
---------------------------------------------- */
+        button.className =
+            "symbol-subtype";
 
-if (button.dataset.toolType === "toggle") {
+        const svg =
+            createMilSymbol(
+                variant.sidc,
+                35
+            );
 
-    const enabled =
-        button.dataset.enabled === "true";
+        button.innerHTML = `
+            <span class="symbol-subtype-icon">
+                ${svg}
+            </span>
 
-    const newState = !enabled;
+            <span class="symbol-subtype-name">
+                ${variant.name}
+            </span>
+        `;
 
-    button.dataset.enabled =
-        newState ? "true" : "false";
+        button.onclick = function (e) {
 
-    button.classList.toggle(
-        "mask-on",
-        newState
-    );
-
-
-    const label =
-        button.querySelector(".button-label");
-
-    if (label) {
-
-        label.textContent =
-            newState
-                ? "Mask: ON"
-                : "Mask: OFF";
-
-    }
-
-
-    if (newState) {
-
-        showNotification("Mask: ON");
-
-        setStatus("Mask: ON");
-
-    } else {
-
-        hideNotification();
-
-        setStatus("Mask: OFF");
-
-    }
-
-    return;
-}
-
-
-    const name =
-        button.querySelector(".button-label")?.textContent.trim()
-        || button.textContent.trim();
-
-        
+    e.stopPropagation();
 
     const alreadySelected =
         button.classList.contains("selected");
 
-
-    /* ---------------------------------------------
-       REMOVE SELECTION FROM THIS SECTION
-    --------------------------------------------- */
-
-    section
-        .querySelectorAll(".tool-button.selected, .mode-button.selected")
-        .forEach(selectedButton => {
-            selectedButton.classList.remove("selected");
+    // Deselect all symbols first
+    document
+        .querySelectorAll(".symbol-subtype")
+        .forEach(btn => {
+            btn.classList.remove("selected");
         });
 
-
-    /* ---------------------------------------------
-       CLICKING SAME BUTTON = DESELECT
-    --------------------------------------------- */
-
+    // Clicking the already-selected symbol = deselect
     if (alreadySelected) {
 
         hideNotification();
 
         setStatus(
-            name + " deselected"
+            variant.name + " deselected"
         );
 
         return;
     }
 
+    // Select this symbol
+    button.classList.add("selected");
 
-    /* ---------------------------------------------
-       SELECT NEW BUTTON
-    --------------------------------------------- */
+    // Show the same center notification
+    showNotification(
+        variant.name
+    );
+
+    setStatus(
+        variant.name + " selected"
+    );
+
+    console.log(
+        "Symbol selected:",
+        category,
+        variant.name
+    );
+};
+
+        grid.appendChild(button);
+
+    });
+
+    /* Position popup beside the clicked button */
+
+    const buttonRect =
+        event.currentTarget.getBoundingClientRect();
+
+    let left =
+        buttonRect.right + 10;
+
+    let top =
+        buttonRect.top;
+
+    const popupWidth = 330;
+    const popupHeight = 300;
+
+    if (
+        left + popupWidth >
+        window.innerWidth - 10
+    ) {
+
+        left =
+            buttonRect.left -
+            popupWidth -
+            10;
+    }
+
+    if (
+        top + popupHeight >
+        window.innerHeight - 10
+    ) {
+
+        top =
+            window.innerHeight -
+            popupHeight -
+            10;
+    }
+
+    left = Math.max(10, left);
+    top = Math.max(10, top);
+
+    picker.style.left =
+        left + "px";
+
+    picker.style.top =
+        top + "px";
+
+    picker.classList.add("show");
+}
+
+function closeSymbolPicker() {
+
+    const picker =
+        document.getElementById("symbolPicker");
+
+    if (!picker) return;
+
+    picker.classList.remove("show");
+}
+
+
+function createMilSymbol(sidc, size = 55) {
+
+    const symbol = new ms.Symbol(sidc, {
+        size: size
+    });
+
+    return symbol.asSVG();
+}
+
+
+
+/* =====================================================
+   TERRAIN STATE
+===================================================== */
+let radius = 1500;
+let power = 2.0;
+let maxHeight = 499;
+
+let statusTimer;
+let notificationTimer;
+
+
+/* =====================================================
+   SECTION DROPDOWNS
+===================================================== */
+
+function toggleSection(header) {
+    header.closest(".control-section").classList.toggle("open");
+}
+
+
+/* =====================================================
+   SELECTION
+===================================================== */
+
+function selectOption(button, name) {
+
+    const section = button.closest(".control-section");
+    const selected = button.classList.contains("selected");
+
+    section.querySelectorAll(".tool-button.selected")
+        .forEach(btn => btn.classList.remove("selected"));
+
+    // Clicking the already-selected button = deselect
+    if (selected) {
+        hideNotification();
+        setStatus(name + " deselected");
+        return;
+    }
 
     button.classList.add("selected");
 
     showNotification(name);
+    setStatus(name + " selected");
+}
+
+
+/* =====================================================
+   BRUSH MODE
+===================================================== */
+
+
+function selectBrushMode(button) {
+
+    const selected = button.classList.contains("selected");
+
+    document
+        .querySelectorAll(".mode-button")
+        .forEach(btn => btn.classList.remove("selected"));
+
+    if (selected) {
+        hideNotification();
+        setStatus(button.innerText.trim() + " deselected");
+        return;
+    }
+
+    button.classList.add("selected");
+
+    const name = button.innerText.trim();
+
+    showNotification(name);
+    setStatus(name + " selected");
+}
+
+
+/* =====================================================
+   TERRAIN TOOL
+===================================================== */
+
+function activateTool(button) {
+
+    const name = button.innerText.trim();
+
+    selectOption(button, name);
+}
+
+
+/* =====================================================
+   VALUE CONTROLS
+===================================================== */
+
+function changeRadius(amount) {
+
+    radius = clamp(radius + amount, 100, 10000);
+
+    update("radiusValue", radius + " m");
+
+    setStatus("Brush radius: " + radius + " m");
+}
+
+
+function changePower(amount) {
+
+    power = clamp(power + amount, 0, 100);
+    power = Math.round(power * 10) / 10;
+
+    update("powerValue", power.toFixed(1) + " m");
+
+    setStatus("Brush power: " + power.toFixed(1) + " m");
+}
+
+
+function changeMaxHeight(amount) {
+
+    maxHeight = clamp(maxHeight + amount, 0, 10000);
+
+    update("maxHeightValue", maxHeight + " m");
+
+    setStatus("Maximum height: " + maxHeight + " m");
+}
+
+
+function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+}
+
+
+function update(id, value) {
+    const element = document.getElementById(id);
+    if (element) element.textContent = value;
+}
+
+
+/* =====================================================
+   INPUT STEPPERS
+===================================================== */
+
+function changeInput(id, amount) {
+
+    const input = document.getElementById(id);
+
+    if (!input) return;
+
+    input.value = Math.max(0, Number(input.value) + amount);
 
     setStatus(
-        name + " selected"
+        input.id + ": " + input.value
+    );
+}
+
+
+/* =====================================================
+   MASK
+===================================================== */
+
+function toggleMask(event) {
+
+    if (event) event.stopPropagation();
+
+    const button = document.getElementById("maskButton");
+
+    const enabled =
+        button.dataset.enabled === "true";
+
+    button.dataset.enabled = String(!enabled);
+
+    button.textContent =
+        `Mask: ${enabled ? "OFF" : "ON"}`;
+
+    button.classList.toggle(
+        "mask-on",
+        !enabled
     );
 
-});
+    showNotification(
+        `Terrain Mask ${enabled ? "OFF" : "ON"}`
+    );
+
+    setStatus(
+        `Terrain mask ${enabled ? "disabled" : "enabled"}`
+    );
+}
+
+
+/* =====================================================
+   UNDO / REDO / RESET
+===================================================== */
+
+function performAction(action) {
+
+    // Actions are momentary, so remove selection
+    document
+        .querySelectorAll(".tool-button.selected, .mode-button.selected")
+        .forEach(btn => {
+            btn.classList.remove("selected");
+        });
+
+    showNotification(action);
+
+    setStatus(
+        action === "Undo"
+            ? "Undo terrain change"
+            : action === "Redo"
+                ? "Redo terrain change"
+                : "Terrain reset"
+    );
+}
 
 
 /* =====================================================
    CENTER NOTIFICATION
 ===================================================== */
+
+function hideNotification() {
+    const notification =
+        document.getElementById("toolNotification");
+
+    if (notification) {
+        notification.classList.remove("show");
+    }
+}
+
 
 function showNotification(name) {
 
@@ -162,29 +535,18 @@ function showNotification(name) {
     text.textContent = name;
 
     notification.classList.add("show");
-}
 
+    clearTimeout(notificationTimer);
 
-/* =====================================================
-   HIDE CENTER NOTIFICATION
-===================================================== */
-
-function hideNotification() {
-
-    const notification =
-        document.getElementById("toolNotification");
-
-    if (!notification) return;
-
-    notification.classList.remove("show");
+    notificationTimer = setTimeout(() => {
+        notification.classList.remove("show");
+    }, 1500);
 }
 
 
 /* =====================================================
    STATUS BAR
 ===================================================== */
-
-let statusTimer;
 
 function setStatus(message) {
 
@@ -198,139 +560,110 @@ function setStatus(message) {
     clearTimeout(statusTimer);
 
     statusTimer = setTimeout(() => {
-
         status.textContent =
             "Terrain editor ready";
-
     }, 2500);
 }
 
+
 /* =====================================================
-   NUMBER CONTROLS (+ / −)
+   PANEL RESIZE
 ===================================================== */
 
-document.addEventListener("click", event => {
+const panel = document.querySelector(".terrain-panel");
 
-    const stepperButton =
-        event.target.closest(".mini-stepper button");
+let resizing = false;
+let startX = 0;
+let startY = 0;
+let startWidth = 0;
+let startHeight = 0;
 
-    if (!stepperButton) return;
+const MIN_WIDTH = 320;
+const MAX_WIDTH = 650;
 
-    const control =
-        stepperButton.closest(".value-control");
+const MIN_HEIGHT = 350;
 
-    if (!control) return;
+function isResizeCorner(event) {
 
-    const valueElement =
-        control.querySelector(".value-number");
+    const rect = panel.getBoundingClientRect();
 
-    if (!valueElement) return;
+    return (
+        event.clientX >= rect.right - 22 &&
+        event.clientY >= rect.bottom - 22
+    );
+}
 
+panel.addEventListener("pointerdown", event => {
 
-    let value =
-        parseFloat(control.dataset.value) || 0;
+    if (!isResizeCorner(event)) return;
 
-    const step =
-        parseFloat(control.dataset.step) || 1;
+    resizing = true;
 
-    const unit =
-        control.dataset.unit || "";
+    startX = event.clientX;
+    startY = event.clientY;
 
+    startWidth = panel.offsetWidth;
+    startHeight = panel.offsetHeight;
 
-    if (stepperButton.dataset.action === "increase") {
+    panel.classList.add("resizing");
 
-        value += step;
+    panel.setPointerCapture(event.pointerId);
 
-    }
+    event.preventDefault();
+});
 
+panel.addEventListener("pointermove", event => {
 
-    if (stepperButton.dataset.action === "decrease") {
+    if (!resizing) return;
 
-        value -= step;
+    const width =
+        Math.min(
+            MAX_WIDTH,
+            Math.max(
+                MIN_WIDTH,
+                startWidth + event.clientX - startX
+            )
+        );
 
-    }
+    const height =
+        Math.min(
+            window.innerHeight * 0.9,
+            Math.max(
+                MIN_HEIGHT,
+                startHeight + event.clientY - startY
+            )
+        );
 
+    panel.style.width = width + "px";
+    panel.style.height = height + "px";
+});
 
-    /* Prevent negative values */
+panel.addEventListener("pointerup", () => {
 
-    if (value < 0) {
-        value = 0;
-    }
+    if (!resizing) return;
 
+    resizing = false;
 
-    /* Save new value */
+    panel.classList.remove("resizing");
+});
 
-    control.dataset.value = value;
+panel.addEventListener("pointercancel", () => {
 
+    resizing = false;
 
-    /* Update display */
-
-    valueElement.textContent =
-        `${value}${unit}`;
-
+    panel.classList.remove("resizing");
 });
 
 
-/* =====================================================
-   SYMBOL CATEGORY SELECTION
-===================================================== */
-
-document.addEventListener("click", event => {
-
-    const symbolButton =
-        event.target.closest(".symbol-category-button");
-
-    if (!symbolButton) return;
-
-
-    /* Remove previous selection */
-
-    document
-        .querySelectorAll(".symbol-category-button.selected")
-        .forEach(button => {
-
-            button.classList.remove("selected");
-
-        });
-
-
-    /* Select clicked symbol */
-
-    symbolButton.classList.add("selected");
-
-
-    /* Get symbol information */
-
-    const symbols =
-        JSON.parse(
-            symbolButton.dataset.symbols || "[]"
-        );
-
-
-    console.log("Selected symbol category:", symbols);
-
-
-    /* Get displayed name */
-
-    const nameElement =
-        symbolButton.querySelector(
-            ".symbol-category-name"
-        );
-
-
-    const symbolName =
-        nameElement
-            ? nameElement.textContent.trim()
-            : "Symbol";
-
-
-    /* Show center status */
-
-    if (typeof setStatus === "function") {
-
-        setStatus(symbolName);
-
-    }
-
-});
-
+window.toggleSection = toggleSection;
+window.selectOption = selectOption;
+window.selectBrushMode = selectBrushMode;
+window.activateTool = activateTool;
+window.changeRadius = changeRadius;
+window.changePower = changePower;
+window.changeMaxHeight = changeMaxHeight;
+window.changeInput = changeInput;
+window.toggleMask = toggleMask;
+window.performAction = performAction;
+window.openSymbolPicker = openSymbolPicker;
+window.closeSymbolPicker = closeSymbolPicker;

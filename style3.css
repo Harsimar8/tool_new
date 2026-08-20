@@ -1,0 +1,70 @@
+/* Theme 3: citrus studio */
+@import url("./style.css");
+
+:root {
+    --panel: rgba(255, 252, 240, .97);
+    --section: rgba(255, 255, 255, .64);
+    --section-hover: rgba(255, 255, 255, .95);
+    --button: rgba(250, 242, 211, .72);
+    --button-hover: #fffdf4;
+    --blue: #e66c2f;
+    --blue-light: #f49a46;
+    --green: #117c70;
+    --text: #272d2b;
+    --secondary: #4e5e55;
+    --muted: #87958a;
+    --border: rgba(39, 45, 43, .15);
+}
+
+body { font-family: "Trebuchet MS", Verdana, sans-serif; background: transparent; }
+.terrain-panel { width: 348px; padding: 10px; background: linear-gradient(150deg, rgba(255,252,240,.98), rgba(242,250,230,.94)); border: 2px solid rgba(255,255,255,.85); border-radius: 27px; box-shadow: 0 24px 60px rgba(43,73,62,.22), inset 0 1px 0 white; backdrop-filter: blur(17px) saturate(120%); scrollbar-color: rgba(230,108,47,.6) transparent; }
+.terrain-panel::-webkit-scrollbar-thumb { background: rgba(230,108,47,.6); }
+.panel-header { height: 65px; padding: 6px 10px; border-bottom: 2px solid rgba(17,124,112,.1); }
+.panel-brand { gap: 11px; }
+.brand-mark { width: 40px; height: 40px; border-radius: 50%; color: #fffaf0; background: linear-gradient(145deg, #f39b46, #e15c39); border: 3px solid rgba(255,255,255,.8); box-shadow: 0 8px 18px rgba(230,108,47,.25); }
+.panel-title { color: #27332e; font-size: 12px; letter-spacing: 1.6px; }
+.panel-subtitle, .panel-menu, .arrow, .value-label, .field-control label { color: #87958a; }
+.panel-menu { border-radius: 50%; }
+.panel-menu:hover { color: #117c70; background: rgba(17,124,112,.1); border-color: rgba(17,124,112,.28); }
+.control-section { margin-bottom: 8px; }
+.section-title { min-height: 46px; padding: 0 13px; border-radius: 16px; background: var(--section); border: 2px solid rgba(17,124,112,.1); box-shadow: 0 4px 10px rgba(43,73,62,.06); }
+.section-title:hover { background: var(--section-hover); border-color: rgba(230,108,47,.45); }
+.section-title-left { gap: 9px; }
+.section-indicator { width: 6px; height: 22px; border-radius: 10px; background: #cad6bd; }
+.control-section.open .section-title { background: linear-gradient(100deg, rgba(247,218,108,.38), rgba(255,255,255,.8)); border-color: rgba(230,108,47,.5); }
+.control-section.open .section-indicator, .tool-button.selected::before { background: #e66c2f; box-shadow: 0 0 10px rgba(230,108,47,.55); }
+.section-name, .control-section.open .section-name { color: #35473e; }
+.control-section.open .arrow, .button-value, .button-icon, .action-icon, .notification-icon { color: #d7582d; }
+.section-content { background: rgba(240,249,228,.52); border-left-color: rgba(17,124,112,.2); border-right-color: rgba(17,124,112,.2); }
+.button-grid, .tool-mode-grid { gap: 8px; }
+.tool-button, .mode-button { min-height: 41px; padding: 7px 9px; border-radius: 13px; background: var(--button); border-color: rgba(39,45,43,.13); color: var(--secondary); box-shadow: 0 4px 9px rgba(43,73,62,.06); }
+.tool-button:hover, .mode-button:hover { background: var(--button-hover); border-color: rgba(17,124,112,.55); color: #27332e; transform: translateY(-2px); box-shadow: 0 8px 14px rgba(43,73,62,.12); }
+.tool-button.selected { color: #b94d28; background: linear-gradient(135deg, rgba(230,108,47,.2), rgba(247,218,108,.25)); border-color: rgba(230,108,47,.7); }
+.mode-button.selected { color: #086b61; background: linear-gradient(135deg, rgba(17,124,112,.18), rgba(174,222,196,.25)); border-color: rgba(17,124,112,.65); }
+.mode-icon { color: #117c70; }
+.value-control { border-bottom-color: rgba(39,45,43,.1); }
+.value-number { color: #405149; }
+.mini-stepper button, .field-row button { background: rgba(255,255,255,.74); border-color: rgba(39,45,43,.15); border-radius: 10px; color: #607168; }
+.mini-stepper button:hover, .field-row button:hover { background: #117c70; border-color: #117c70; color: white; }
+.control-divider { background: linear-gradient(90deg, transparent, rgba(230,108,47,.25), transparent); }
+.field-row input { background: rgba(255,255,255,.78); border-color: rgba(39,45,43,.15); border-radius: 10px; color: #272d2b; }
+.field-row input:focus { border-color: rgba(17,124,112,.75); box-shadow: 0 0 0 3px rgba(17,124,112,.1); }
+.reset-button { border-color: rgba(230,108,47,.35); border-radius: 12px; background: rgba(230,108,47,.09); color: #b94d28; }
+.reset-button:hover { color: #8d3920; background: rgba(230,108,47,.17); border-color: rgba(230,108,47,.65); }
+.symbol-picker { width: 218px; background: rgba(255,252,240,.98); border: 2px solid rgba(17,124,112,.32); border-radius: 20px; box-shadow: 0 20px 46px rgba(43,73,62,.24); }
+.symbol-picker-header { background: linear-gradient(100deg, #f9df83, #ccebdc); border-bottom-color: rgba(17,124,112,.2); color: #35473e; }
+.symbol-picker-close { border-radius: 50%; color: #87958a; }
+.symbol-picker-close:hover { background: rgba(230,108,47,.13); color: #d7582d; }
+.symbol-subtype:hover { background: rgba(17,124,112,.09); }
+.symbol-subtype.selected { background: rgba(17,124,112,.1); border-color: rgba(17,124,112,.58); box-shadow: inset 0 0 12px rgba(17,124,112,.07), 0 0 13px rgba(17,124,112,.1); }
+.symbol-subtype-name, .symbol-category-button { color: #607168; }
+.symbol-category-button { background: rgba(255,255,255,.72); border-color: rgba(17,124,112,.22); border-radius: 11px; }
+.symbol-category-button:hover { background: rgba(17,124,112,.1); border-color: rgba(17,124,112,.58); color: #086b61; }
+.symbol-category-icon { background: rgba(17,124,112,.08); border-color: rgba(17,124,112,.25); border-radius: 9px; color: #117c70; }
+#maskButton.mask-on { color: #086b61; background: rgba(17,124,112,.14); border-color: rgba(17,124,112,.62); }
+.panel-status { border-top-color: rgba(39,45,43,.12); }
+.status-dot { background: #117c70; box-shadow: 0 0 9px rgba(17,124,112,.65); }
+.tool-notification { background: rgba(255,252,240,.98); border-color: rgba(230,108,47,.5); border-radius: 16px; color: #35473e; box-shadow: 0 18px 45px rgba(43,73,62,.22); }
+.tool-notification small { color: #87958a; }
+
+@media (max-width: 600px) { .terrain-panel { width: calc(100vw - 20px); } }

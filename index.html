@@ -1,90 +1,53 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Terrain Tools</title>
-
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style6.css">
 </head>
 
 <body>
 
-    <!-- Terrain toolbar -->
-    <aside
-        id="terrainTools"
-        class="terrain-panel">
+    <aside class="terrain-panel">
 
-        <!-- render.js builds the toolbar here -->
-        <div id="terrainPanelContent"></div>
+        <!-- HEADER (Dynamic) -->
+        <div id="panelHeaderContainer"></div>
+
+        <!-- CONTROL SECTIONS (Dynamic) -->
+        <div id="dynamicPanelContent"></div>
+
+        <!-- STATUS -->
+        <div class="panel-status">
+            <span class="status-dot"></span>
+            <span id="statusText">Terrain editor ready</span>
+        </div>
 
     </aside>
 
-
-    <!-- Symbol subtype popup -->
-    <div
-        id="symbolPicker"
-        class="symbol-picker">
-
+    <!-- SYMBOL PICKER -->
+    <div id="symbolPicker" class="symbol-picker">
         <div class="symbol-picker-header">
-
-            <span id="symbolPickerTitle">
-                SYMBOL
-            </span>
-
-            <button
-                id="symbolPickerClose"
-                class="symbol-picker-close"
-                type="button">
-                ×
-            </button>
-
+            <span id="symbolPickerTitle">RADAR</span>
+            <button class="symbol-picker-close" onclick="closeSymbolPicker()">×</button>
         </div>
-
-        <div
-            id="symbolPickerGrid"
-            class="symbol-picker-grid">
-        </div>
-
+        <div id="symbolPickerGrid" class="symbol-picker-grid"></div>
     </div>
 
-
-    <!-- Center selection notification -->
-    <div
-        id="toolNotification"
-        class="tool-notification">
-
-        <span
-            id="notificationIcon"
-            class="notification-icon">
-            ✓
-        </span>
-
+    <!-- CENTER NOTIFICATION -->
+    <div id="toolNotification" class="tool-notification">
+        <span class="notification-icon">✓</span>
         <div>
-
-            <div id="notificationText">
-                Terrain editor ready
-            </div>
-
-            <small id="notificationSubtitle">
-                TOOL SELECTED
-            </small>
-
+            <div id="notificationText">Elevation Colours</div>
+            <small>TOOL SELECTED</small>
         </div>
-
     </div>
 
-
-    <!-- Main application -->
-    <script
-        type="module"
-        src="script.js">
-    </script>
+    <!-- Load render script first, then main logic -->
+    <script type="module" src="render.js"></script>
+    <script type="module" src="script.js"></script>
 
 </body>
 
 </html>
-

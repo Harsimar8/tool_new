@@ -258,7 +258,7 @@ body {
 }
 
 .control-section.open .section-content {
-    max-height: 1000px;
+    max-height: 2000px;
     padding-top: 9px;
     padding-bottom: 9px;
     opacity: 1;
@@ -873,16 +873,14 @@ body {
 }
 
 /* CUSTOM PANEL RESIZE */
+/* CUSTOM PANEL RESIZE */
 .terrain-panel::after {
     content: "";
-
-    position: absolute;
-    right: 5px;
-    bottom: 5px;
-
+    display: block;
+    float: right;
     width: 18px;
     height: 18px;
-
+    margin-top: -18px;
     cursor: nwse-resize;
 
     background:
@@ -898,11 +896,7 @@ body {
             transparent 68%);
 
     opacity: .65;
-
-    transition:
-        opacity .2s ease,
-        transform .2s ease;
-
+    transition: opacity .2s ease, transform .2s ease;
     z-index: 50;
 }
 

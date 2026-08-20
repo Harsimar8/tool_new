@@ -1,542 +1,172 @@
-import toolConfig from "./tools.json";
-import ms from "milsymbol";
-
-const container = document.getElementById("terrainPanelContent");
-
-if (!container) {
-    throw new Error("terrainPanelContent not found");
-}
-
-
-/* =====================================================
-   PANEL HEADER
-===================================================== */
-
-container.innerHTML = `
-    <div class="panel-header">
-
-        <div class="panel-brand">
-
-            <div class="brand-mark">
-                ${toolConfig.panel.icon}
-            </div>
-
-            <div>
-                <div class="panel-title">
-                    ${toolConfig.panel.title}
-                </div>
-
-                <div class="panel-subtitle">
-                    ${toolConfig.panel.subtitle}
-                </div>
-            </div>
-
-        </div>
-
-        <button
-            type="button"
-            class="panel-menu">
-            ⋮
-        </button>
-
-    </div>
-`;
-
-
-/* =====================================================
-   SECTIONS
-===================================================== */
-
-toolConfig.sections.forEach(section => {
-
-    const sectionElement =
-        document.createElement("section");
-
-    sectionElement.className =
-        "control-section";
-
-    sectionElement.dataset.sectionId =
-        section.id;
-
-
-    /* ---------------------------------------------
-       SECTION HEADER
-    --------------------------------------------- */
-
-    sectionElement.innerHTML = `
-        <div class="section-title">
-
-            <div class="section-title-left">
-
-                <span class="section-indicator"></span>
-
-                <span class="section-name">
-                    ${section.title}
-                </span>
-
-            </div>
-
-            <span class="arrow">
-                ▾
-            </span>
-
-        </div>
-
-        <div class="section-content"></div>
-    `;
-
-
-    const content =
-        sectionElement.querySelector(".section-content");
-
-
-    /* =================================================
-       CREATE GROUPS
-    ================================================= */
-
-    let buttonGrid = null;
-    let modeGrid = null;
-    let symbolGrid = null;
-
-
-    /* =================================================
-       ADD ITEMS
-    ================================================= */
-
-    section.items.forEach(item => {
-
-        /* ---------------------------------------------
-           NORMAL BUTTONS
-        --------------------------------------------- */
-
-        if (item.type === "button") {
-
-            if (!buttonGrid) {
-
-                buttonGrid =
-                    document.createElement("div");
-
-                buttonGrid.className =
-                    "button-grid";
-
-                content.appendChild(buttonGrid);
-            }
-
-            buttonGrid.appendChild(
-                createButton(item)
-            );
-
-            return;
-        }
-
-
-        /* ---------------------------------------------
-           BRUSH / MODE BUTTONS
-        --------------------------------------------- */
-
-        if (item.type === "mode") {
-
-            if (!modeGrid) {
-
-                modeGrid =
-                    document.createElement("div");
-
-                modeGrid.className =
-                    "tool-mode-grid";
-
-                content.appendChild(modeGrid);
-            }
-
-            modeGrid.appendChild(
-                createMode(item)
-            );
-
-            return;
-        }
-
-
-        /* ---------------------------------------------
-           NUMBER CONTROLS
-        --------------------------------------------- */
-
-        if (item.type === "number") {
-
-            content.appendChild(
-                createNumber(item)
-            );
-
-            return;
-        }
-
-
-        /* ---------------------------------------------
-           TOGGLE
-        --------------------------------------------- */
-
-        if (item.type === "toggle") {
-
-    if (!buttonGrid) {
-
-        buttonGrid =
-            document.createElement("div");
-
-        buttonGrid.className =
-            "button-grid";
-
-        content.appendChild(buttonGrid);
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const response = await fetch("tools.json");
+        const data = await response.json();
+        
+        renderHeader(data.panel);
+        renderSections(data.sections);
+    } catch (error) {
+        console.error("Failed to load tools.json:", error);
     }
-
-    buttonGrid.appendChild(
-        createToggle(item)
-    );
-
-    return;
-}
-
-
-        /* ---------------------------------------------
-           SYMBOL CATEGORIES
-        --------------------------------------------- */
-
-        if (item.type === "symbolCategory") {
-
-            if (!symbolGrid) {
-
-                symbolGrid =
-                    document.createElement("div");
-
-                symbolGrid.className =
-                    "symbol-category-grid";
-
-                content.appendChild(symbolGrid);
-            }
-
-            symbolGrid.appendChild(
-                createSymbolCategory(item)
-            );
-
-            return;
-        }
-
-    });
-
-
-    /* ---------------------------------------------
-       ADD SECTION TO PANEL
-    --------------------------------------------- */
-
-    container.appendChild(sectionElement);
-
 });
 
+function renderHeader(panelData) {
+    const headerContainer = document.getElementById("panelHeaderContainer");
+    if (!headerContainer) return;
 
-/* =====================================================
-   STATUS
-===================================================== */
-
-container.insertAdjacentHTML(
-    "beforeend",
-    `
-        <div class="panel-status">
-
-            <span class="status-dot"></span>
-
-            <span id="statusText">
-                ${toolConfig.status.defaultText}
-            </span>
-
+    headerContainer.innerHTML = `
+        <div class="panel-header">
+            <div class="panel-brand">
+                <div class="brand-mark">${panelData.icon}</div>
+                <div class="brand-text">
+                    <div class="panel-title">${panelData.title}</div>
+                    <div class="panel-subtitle">${panelData.subtitle}</div>
+                </div>
+            </div>
+            <button class="panel-menu" title="Terrain tools menu">⋮</button>
         </div>
-    `
-);
-
-
-/* =====================================================
-   ITEM CREATION
-===================================================== */
-
-function createItem(item) {
-
-    if (item.type === "button") {
-        return createButton(item);
-    }
-
-    if (item.type === "mode") {
-        return createMode(item);
-    }
-
-    if (item.type === "number") {
-        return createNumber(item);
-    }
-
-    if (item.type === "toggle") {
-        return createToggle(item);
-    }
-
-    if (item.type === "symbolCategory") {
-        return createSymbolCategory(item);
-    }
-
-    return document.createElement("div");
-}
-
-
-/* =====================================================
-   NORMAL BUTTON
-===================================================== */
-
-function createButton(item) {
-
-    const button =
-        document.createElement("button");
-
-    button.type = "button";
-
-    button.className =
-        "tool-button";
-
-    button.dataset.toolId =
-        item.id;
-
-
-    if (item.wide) {
-        button.classList.add("wide");
-    }
-
-
-    button.innerHTML = `
-
-        ${item.icon
-            ? `
-                <span class="button-icon">
-                    ${item.icon}
-                </span>
-              `
-            : ""
-        }
-
-        <span class="button-label">
-            ${item.label}
-        </span>
-
-        ${item.value
-            ? `
-                <span class="button-value">
-                    ${item.value}
-                </span>
-              `
-            : ""
-        }
-
     `;
-
-
-    return button;
 }
 
+function renderSections(sections) {
+    const container = document.getElementById("dynamicPanelContent");
+    if (!container) return;
+    container.innerHTML = "";
 
-/* =====================================================
-   MODE BUTTON
-===================================================== */
+    sections.forEach(section => {
+        const sectionEl = document.createElement("section");
+        sectionEl.className = "control-section";
 
-function createMode(item) {
+        let html = `
+            <div class="section-title" onclick="toggleSection(this)">
+                <div class="section-title-left">
+                    <span class="section-indicator"></span>
+                    <span class="section-icon">${section.icon}</span>
+                    <span class="section-name">${section.title}</span>
+                </div>
+                <span class="arrow">▾</span>
+            </div>
+            <div class="section-content">
+        `;
 
-    const button =
-        document.createElement("button");
+        // We group items intelligently based on their type layout
+        let buttonGridActive = false;
+        let symbolGridActive = false;
 
-    button.type = "button";
+        section.items.forEach((item, index) => {
+            const isWide = item.wide ? " wide" : "";
 
-    button.className =
-        "mode-button";
+            if (item.type === "button" || item.type === "mode") {
+                if (!buttonGridActive && !symbolGridActive) {
+                    html += `<div class="button-grid">`;
+                    buttonGridActive = true;
+                }
 
-    button.dataset.toolId =
-        item.id;
+                if (item.type === "mode") {
+                    html += `
+                        <button class="mode-button${isWide}" onclick="selectBrushMode(this)">
+                            <span class="mode-icon">${item.icon || "◇"}</span>
+                            <span>${item.label}</span>
+                        </button>`;
+                } else {
+                    const iconHTML = item.icon ? `<span class="button-icon">${item.icon}</span>` : "";
+                    
+                    // Check if it's an action button (Undo, Redo, Reset)
+                    const lowerId = (item.id || "").toLowerCase();
+                    const lowerLabel = (item.label || "").toLowerCase();
+                    const isAction = lowerId.includes("undo") || lowerId.includes("redo") || lowerId.includes("reset") || 
+                                     lowerLabel.includes("undo") || lowerLabel.includes("redo") || lowerLabel.includes("reset");
 
+                    const actionHandler = isAction
+                        ? `performAction('${item.label.replace(" terrain", "")}')`
+                        : `selectOption(this, '${item.label}')`;
 
-    button.innerHTML = `
-
-        ${item.icon
-            ? `
-                <span class="mode-icon">
-                    ${item.icon}
-                </span>
-              `
-            : ""
-        }
-
-        <span class="button-label">
-            ${item.label}
-        </span>
-
-    `;
-
-
-    return button;
-}
-
-
-/* =====================================================
-   NUMBER CONTROL
-===================================================== */
-
-function createNumber(item) {
-
-    const wrapper =
-        document.createElement("div");
-
-    wrapper.className =
-        "value-control";
-
-    wrapper.dataset.toolId =
-        item.id;
-
-    wrapper.dataset.value =
-        item.value;
-
-    wrapper.dataset.step =
-        item.step ?? 1;
-
-    wrapper.dataset.unit =
-        item.unit ?? "";
-
-
-    wrapper.innerHTML = `
-
-        <div class="value-info">
-
-            <span class="value-label">
-                ${item.label}
-            </span>
-
-            <span
-                class="value-number"
-                id="${item.id}Value">
-
-                ${item.value}${item.unit || ""}
-
-            </span>
-
-        </div>
-
-
-        <div class="mini-stepper">
-
-            <button
-                type="button"
-                data-action="decrease">
-
-                −
-
-            </button>
-
-            <button
-                type="button"
-                data-action="increase">
-
-                +
-
-            </button>
-
-        </div>
-
-    `;
-
-
-    return wrapper;
-}
-
-
-/* =====================================================
-   TOGGLE
-===================================================== */
-
-/* =====================================================
-   TOGGLE
-===================================================== */
-
-function createToggle(item) {
-
-    const button = document.createElement("button");
-
-    button.type = "button";
-
-    button.className = "tool-button mask-toggle";
-
-    button.id = `${item.id}Button`;
-
-    button.dataset.toolId = item.id;
-
-    button.dataset.toolType = "toggle";
-
-    button.dataset.enabled =
-        item.value ? "true" : "false";
-
-
-    /* ---------------------------------------------
-       INITIAL STATE
-    --------------------------------------------- */
-
-    if (item.value) {
-        button.classList.add("mask-on");
-    }
-
-
-    /* ---------------------------------------------
-       LABEL
-    --------------------------------------------- */
-
-    button.innerHTML = `
-        <span class="button-label">
-            ${
-                item.value
-                    ? item.onLabel
-                    : item.offLabel
+                    html += `
+                        <button class="tool-button${isWide}" onclick="${actionHandler}">
+                            ${iconHTML}
+                            <span>${item.label}</span>
+                        </button>`;
+                }
             }
-        </span>
-    `;
+            else if (item.type === "number") {
+                // If a button grid was open, close it first
+                if (buttonGridActive) {
+                    html += `</div>`;
+                    buttonGridActive = false;
+                }
 
+                // Check if it's a stepper-based value control (like radius, power, maxHeight) or text input field
+                if (item.id === "radius" || item.id === "power" || item.id === "maxHeight") {
+                    let stepFnName = item.id === "radius" ? "changeRadius" : item.id === "power" ? "changePower" : "changeMaxHeight";
+                    let stepVal = item.step;
 
-    return button;
-}
+                    html += `
+                        <div class="value-control">
+                            <div class="value-info">
+                                <span class="value-label">${item.label}</span>
+                                <span class="value-number" id="${item.id}Value">${item.value} ${item.unit || ""}</span>
+                            </div>
+                            <div class="mini-stepper">
+                                <button onclick="${stepFnName}(-(${stepVal}))">−</button>
+                                <button onclick="${stepFnName}(${stepVal})">+</button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Input text field style (Path width, dig depth)
+                    let stepVal = item.step || 1;
+                    html += `
+                        <div class="field-control">
+                            <label>
+                                ${item.label} <span>${item.description ? `(${item.description})` : `(${item.unit})`}</span>
+                            </label>
+                            <div class="field-row">
+                                <input type="number" id="${item.id}" value="${item.value}">
+                                <button onclick="changeInput('${item.id}', -${stepVal})">−</button>
+                                <button onclick="changeInput('${item.id}', ${stepVal})">+</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            else if (item.type === "symbolCategory") {
+                if (buttonGridActive) {
+                    html += `</div>`;
+                    buttonGridActive = false;
+                }
+                if (!symbolGridActive) {
+                    html += `<div class="symbol-category-grid">`;
+                    symbolGridActive = true;
+                }
 
+                html += `
+                    <button class="symbol-category-button${isWide}" onclick="openSymbolPicker(event, '${item.label}')">
+                        <span class="symbol-category-icon">${item.icon}</span>
+                        <span class="symbol-category-name">${item.label}</span>
+                    </button>
+                `;
+            }
+            else if (item.type === "toggle") {
+                if (!buttonGridActive && !symbolGridActive) {
+                    html += `<div class="button-grid">`;
+                    buttonGridActive = true;
+                }
+                html += `
+                    <button class="tool-button${isWide}" id="maskButton" onclick="toggleMask(event)" data-enabled="false">
+                        ${item.offLabel}
+                    </button>
+                `;
+            }
 
-/* =====================================================
-   SYMBOL CATEGORY
-===================================================== */
+            // Close active grids if it's the last item
+            if (index === section.items.length - 1) {
+                if (buttonGridActive) html += `</div>`;
+                if (symbolGridActive) html += `</div>`;
+            }
+        });
 
-function createSymbolCategory(item) {
-
-    const button =
-        document.createElement("button");
-
-    button.type = "button";
-
-    button.className =
-        "symbol-category-button";
-
-    button.dataset.toolId =
-        item.id;
-
-    button.dataset.symbols =
-        JSON.stringify(item.symbols || []);
-
-
-    if (item.wide) {
-        button.classList.add("wide");
-    }
-
-
-    button.innerHTML = `
-
-        <span class="symbol-category-icon">
-            ${item.icon || "◈"}
-        </span>
-
-        <span class="symbol-category-name">
-            ${item.label}
-        </span>
-
-    `;
-
-
-    return button;
+        html += `</div>`; // Close section-content
+        sectionEl.innerHTML = html;
+        container.appendChild(sectionEl);
+    });
 }
