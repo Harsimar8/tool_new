@@ -1,289 +1,336 @@
-/* =====================================================
-   LOAD TOOLS CONFIG
-===================================================== */
 
-let toolsConfig = null;
+import "./render.js";
 
-
-/* =====================================================
-   LOAD JSON
-===================================================== */
-
-async function loadTools() {
-
-    try {
-
-        const response = await fetch("./tools.json");
-
-        if (!response.ok) {
-            throw new Error("Could not load tools.json");
-        }
-
-        toolsConfig = await response.json();
-
-        console.log("tools.json loaded:", toolsConfig);
-
-        renderPanel();
-
-    } catch (error) {
-
-        console.error("Failed to load tools.json:", error);
-
-    }
-
-}
-
-
-/* =====================================================
-   RENDER PANEL
-===================================================== */
-
-function renderPanel() {
-
-    const container =
-        document.getElementById("terrainPanelContent");
-
-    if (!container || !toolsConfig) return;
-
-    container.innerHTML = "";
-
-    toolsConfig.sections.forEach(section => {
-
-        const sectionElement =
-            document.createElement("section");
-
-        sectionElement.className =
-            "control-section";
-
-        sectionElement.innerHTML = `
-            <div class="section-title" onclick="toggleSection(this)">
-
-                <div class="section-title-left">
-
-                    <span class="section-indicator"></span>
-
-                    <span class="section-icon">
-                        ${section.icon || ""}
-                    </span>
-
-                    <span class="section-name">
-                        ${section.title}
-                    </span>
-
-                </div>
-
-                <span class="arrow">▾</span>
-
-            </div>
-
-            <div class="section-content">
-            </div>
-        `;
-
-        const content =
-            sectionElement.querySelector(".section-content");
-
-       section.items.forEach(item => {
-
-    if (item.type === "button") {
-        renderButton(content, item);
-    }
-
-    if (item.type === "mode") {
-        renderMode(content, item);
-    }
-
-    if (item.type === "number") {
-        renderNumber(content, item);
-    }
-
-});
-        container.appendChild(sectionElement);
-    });
-}
-
-
-function renderButton(container, item) {
-
-    const button =
-        document.createElement("button");
-
-    button.className =
-        "tool-button";
-
-    if (item.wide) {
-        button.classList.add("wide");
-    }
-
-    button.dataset.action =
-        item.action || "";
-
-    button.innerHTML = `
-        ${item.icon
-            ? `<span class="button-icon">${item.icon}</span>`
-            : ""
-        }
-
-        <span class="button-main">
-            ${item.label}
-        </span>
-
-        ${item.value
-            ? `<span class="button-value">${item.value}</span>`
-            : ""
-        }
-    `;
-
-    button.addEventListener("click", () => {
-
-        console.log(
-            "Clicked JSON item:",
-            item.id,
-            item.action
-        );
-
-    });
-
-    container.appendChild(button);
-}
-
-
-
-function renderMode(container, item) {
-
-    const button =
-        document.createElement("button");
-
-    button.className = "mode-button";
-
-    button.dataset.action =
-        item.action || "";
-
-    button.innerHTML = `
-        <span class="mode-icon">
-            ${item.icon || ""}
-        </span>
-
-        <span>
-            ${item.label}
-        </span>
-    `;
-
-    button.addEventListener("click", () => {
-
-        selectBrushMode(button);
-
-    });
-
-    container.appendChild(button);
-}
-
-
-
-function renderNumber(container, item) {
-
-    const control =
-        document.createElement("div");
-
-    control.className = "value-control";
-
-    const valueId =
-        item.id + "Value";
-
-    control.innerHTML = `
-        <div class="value-info">
-
-            <span class="value-label">
-                ${item.label}
-            </span>
-
-            <span
-                class="value-number"
-                id="${valueId}">
-                ${item.value} ${item.unit || ""}
-            </span>
-
-        </div>
-
-        <div class="mini-stepper">
-
-            <button class="step-minus">
-                −
-            </button>
-
-            <button class="step-plus">
-                +
-            </button>
-
-        </div>
-    `;
-
-    const minus =
-        control.querySelector(".step-minus");
-
-    const plus =
-        control.querySelector(".step-plus");
-
-
-    minus.addEventListener("click", () => {
-
-        changeNumber(item, -item.step);
-
-    });
-
-
-    plus.addEventListener("click", () => {
-
-        changeNumber(item, item.step);
-
-    });
-
-
-    container.appendChild(control);
-}
-
-function changeNumber(item, amount) {
-
-    item.value =
-        Number(item.value) + Number(amount);
-
-    const valueElement =
-        document.getElementById(item.id + "Value");
-
-    if (!valueElement) return;
-
-    valueElement.textContent =
-        `${item.value} ${item.unit || ""}`;
-
-    console.log(
-        item.id,
-        item.value
-    );
-}
 
 /* =====================================================
    SECTION DROPDOWN
 ===================================================== */
 
-function toggleSection(header) {
+document.addEventListener("click", event => {
 
-    header
-        .closest(".control-section")
-        .classList
-        .toggle("open");
+    /* ---------------------------------------------
+       SECTION OPEN / CLOSE
+    --------------------------------------------- */
 
+    const sectionTitle =
+        event.target.closest(".section-title");
+
+    if (sectionTitle) {
+
+        const section =
+            sectionTitle.closest(".control-section");
+
+        if (section) {
+            section.classList.toggle("open");
+        }
+
+        return;
+    }
+
+
+    /* ---------------------------------------------
+       TOOL SELECTION
+    --------------------------------------------- */
+
+    const button =
+        event.target.closest(".tool-button, .mode-button");
+
+    if (!button) return;
+
+    const section =
+        button.closest(".control-section");
+
+    if (!section) return;
+
+    /* ---------------------------------------------
+   MASK TOGGLE
+--------------------------------------------- */
+
+if (button.dataset.toolType === "toggle") {
+
+    const enabled =
+        button.dataset.enabled === "true";
+
+    const newState = !enabled;
+
+    button.dataset.enabled =
+        newState ? "true" : "false";
+
+    button.classList.toggle(
+        "mask-on",
+        newState
+    );
+
+
+    const label =
+        button.querySelector(".button-label");
+
+    if (label) {
+
+        label.textContent =
+            newState
+                ? "Mask: ON"
+                : "Mask: OFF";
+
+    }
+
+
+    if (newState) {
+
+        showNotification("Mask: ON");
+
+        setStatus("Mask: ON");
+
+    } else {
+
+        hideNotification();
+
+        setStatus("Mask: OFF");
+
+    }
+
+    return;
+}
+
+
+    const name =
+        button.querySelector(".button-label")?.textContent.trim()
+        || button.textContent.trim();
+
+        
+
+    const alreadySelected =
+        button.classList.contains("selected");
+
+
+    /* ---------------------------------------------
+       REMOVE SELECTION FROM THIS SECTION
+    --------------------------------------------- */
+
+    section
+        .querySelectorAll(".tool-button.selected, .mode-button.selected")
+        .forEach(selectedButton => {
+            selectedButton.classList.remove("selected");
+        });
+
+
+    /* ---------------------------------------------
+       CLICKING SAME BUTTON = DESELECT
+    --------------------------------------------- */
+
+    if (alreadySelected) {
+
+        hideNotification();
+
+        setStatus(
+            name + " deselected"
+        );
+
+        return;
+    }
+
+
+    /* ---------------------------------------------
+       SELECT NEW BUTTON
+    --------------------------------------------- */
+
+    button.classList.add("selected");
+
+    showNotification(name);
+
+    setStatus(
+        name + " selected"
+    );
+
+});
+
+
+/* =====================================================
+   CENTER NOTIFICATION
+===================================================== */
+
+function showNotification(name) {
+
+    const notification =
+        document.getElementById("toolNotification");
+
+    const text =
+        document.getElementById("notificationText");
+
+    if (!notification || !text) return;
+
+    text.textContent = name;
+
+    notification.classList.add("show");
 }
 
 
 /* =====================================================
-   START
+   HIDE CENTER NOTIFICATION
 ===================================================== */
 
-loadTools();
+function hideNotification() {
+
+    const notification =
+        document.getElementById("toolNotification");
+
+    if (!notification) return;
+
+    notification.classList.remove("show");
+}
 
 
 /* =====================================================
-   GLOBAL
+   STATUS BAR
 ===================================================== */
 
-window.toggleSection = toggleSection;
+let statusTimer;
+
+function setStatus(message) {
+
+    const status =
+        document.getElementById("statusText");
+
+    if (!status) return;
+
+    status.textContent = message;
+
+    clearTimeout(statusTimer);
+
+    statusTimer = setTimeout(() => {
+
+        status.textContent =
+            "Terrain editor ready";
+
+    }, 2500);
+}
+
+/* =====================================================
+   NUMBER CONTROLS (+ / −)
+===================================================== */
+
+document.addEventListener("click", event => {
+
+    const stepperButton =
+        event.target.closest(".mini-stepper button");
+
+    if (!stepperButton) return;
+
+    const control =
+        stepperButton.closest(".value-control");
+
+    if (!control) return;
+
+    const valueElement =
+        control.querySelector(".value-number");
+
+    if (!valueElement) return;
+
+
+    let value =
+        parseFloat(control.dataset.value) || 0;
+
+    const step =
+        parseFloat(control.dataset.step) || 1;
+
+    const unit =
+        control.dataset.unit || "";
+
+
+    if (stepperButton.dataset.action === "increase") {
+
+        value += step;
+
+    }
+
+
+    if (stepperButton.dataset.action === "decrease") {
+
+        value -= step;
+
+    }
+
+
+    /* Prevent negative values */
+
+    if (value < 0) {
+        value = 0;
+    }
+
+
+    /* Save new value */
+
+    control.dataset.value = value;
+
+
+    /* Update display */
+
+    valueElement.textContent =
+        `${value}${unit}`;
+
+});
+
+
+/* =====================================================
+   SYMBOL CATEGORY SELECTION
+===================================================== */
+
+document.addEventListener("click", event => {
+
+    const symbolButton =
+        event.target.closest(".symbol-category-button");
+
+    if (!symbolButton) return;
+
+
+    /* Remove previous selection */
+
+    document
+        .querySelectorAll(".symbol-category-button.selected")
+        .forEach(button => {
+
+            button.classList.remove("selected");
+
+        });
+
+
+    /* Select clicked symbol */
+
+    symbolButton.classList.add("selected");
+
+
+    /* Get symbol information */
+
+    const symbols =
+        JSON.parse(
+            symbolButton.dataset.symbols || "[]"
+        );
+
+
+    console.log("Selected symbol category:", symbols);
+
+
+    /* Get displayed name */
+
+    const nameElement =
+        symbolButton.querySelector(
+            ".symbol-category-name"
+        );
+
+
+    const symbolName =
+        nameElement
+            ? nameElement.textContent.trim()
+            : "Symbol";
+
+
+    /* Show center status */
+
+    if (typeof setStatus === "function") {
+
+        setStatus(symbolName);
+
+    }
+
+});
+

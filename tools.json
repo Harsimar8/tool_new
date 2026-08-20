@@ -14,284 +14,211 @@
       "id": "terrainView",
       "title": "TERRAIN VIEW",
       "icon": "◒",
-      "type": "tools",
-
       "items": [
         {
           "id": "terrainExaggeration",
           "type": "button",
           "label": "Exaggerate",
-          "value": "1.0×",
-          "action": "terrainExaggeration"
+          "value": "1.0×"
         },
         {
           "id": "elevationColours",
           "type": "button",
-          "label": "Elevation colours",
-          "action": "elevationColours"
+          "label": "Elevation colours"
         },
         {
           "id": "slopeShading",
           "type": "button",
-          "label": "Slope shading",
-          "action": "slopeShading"
+          "label": "Slope shading"
         },
         {
           "id": "contours",
           "type": "button",
-          "label": "Contours",
-          "action": "contours"
+          "label": "Contours"
         },
         {
           "id": "waterLevel",
           "type": "button",
           "label": "Water level",
-          "wide": true,
-          "action": "waterLevel"
+          "wide": true
         }
       ]
     },
-
 
     {
       "id": "sculptBrush",
       "title": "SCULPT BRUSH",
       "icon": "✦",
-      "type": "sculpt",
-
       "items": [
-
         {
           "id": "modifyTerrain",
           "type": "mode",
           "label": "Modify terrain",
-          "icon": "◇",
-          "action": "modifyTerrain"
+          "icon": "◇"
         },
-
         {
           "id": "brushRaise",
           "type": "mode",
           "label": "Brush: RAISE",
-          "icon": "▲",
-          "action": "brushRaise"
+          "icon": "▲"
         },
-
         {
           "id": "radius",
           "type": "number",
           "label": "Radius",
           "value": 1500,
           "unit": "m",
-          "step": 100,
-          "action": "changeRadius"
+          "step": 100
         },
-
         {
           "id": "power",
           "type": "number",
           "label": "Power",
           "value": 2,
           "unit": "m",
-          "step": 0.5,
-          "action": "changePower"
+          "step": 0.5
         },
-
         {
           "id": "maxHeight",
           "type": "number",
           "label": "Max height",
           "value": 499,
           "unit": "m",
-          "step": 1,
-          "action": "changeMaxHeight"
+          "step": 1
         },
-
         {
-          "id": "sculptActions",
-          "type": "actionGroup",
-
-          "items": [
-            {
-              "id": "undo",
-              "type": "button",
-              "label": "Undo",
-              "icon": "↶",
-              "action": "undo"
-            },
-            {
-              "id": "redo",
-              "type": "button",
-              "label": "Redo",
-              "icon": "↷",
-              "action": "redo"
-            }
-          ]
+          "id": "undo",
+          "type": "button",
+          "label": "Undo",
+          "icon": "↶"
         },
-
+        {
+          "id": "redo",
+          "type": "button",
+          "label": "Redo",
+          "icon": "↷"
+        },
         {
           "id": "resetTerrain",
-          "type": "action",
+          "type": "button",
           "label": "Reset terrain",
           "icon": "↻",
-          "action": "resetTerrain"
+          "wide": true
         }
       ]
     },
-
 
     {
       "id": "shapingTools",
       "title": "SHAPING TOOLS",
       "icon": "⌁",
-      "type": "tools",
-
       "items": [
-
         {
           "id": "gradeRoad",
           "type": "button",
           "label": "Grade path: ROAD",
-          "icon": "╱",
-          "action": "gradeRoad"
+          "icon": "╱"
         },
-
         {
           "id": "gradeFlatten",
           "type": "button",
           "label": "Grade flatten",
-          "icon": "━",
-          "action": "gradeFlatten"
+          "icon": "━"
         },
-
         {
           "id": "pathWidth",
           "type": "number",
           "label": "PATH WIDTH",
           "value": 500,
           "unit": "m",
-          "step": 10,
-          "action": "changePathWidth"
+          "step": 10
         },
-
         {
           "id": "digDepth",
           "type": "number",
           "label": "DIG DEPTH",
           "value": 0,
           "unit": "m",
-          "description": "+down",
-          "action": "changeDigDepth"
+          "description": "+down"
         },
-
         {
-          "id": "shapingActions",
-          "type": "actionGroup",
-
-          "items": [
-            {
-              "id": "stampDome",
-              "type": "button",
-              "label": "Stamp: DOME",
-              "action": "stampDome"
-            },
-            {
-              "id": "crossSection",
-              "type": "button",
-              "label": "Cross-section",
-              "action": "crossSection"
-            },
-            {
-              "id": "regionOffset",
-              "type": "button",
-              "label": "Region offset",
-              "action": "regionOffset"
-            },
-            {
-              "id": "regionUp",
-              "type": "button",
-              "label": "Rgn up",
-              "action": "regionUp"
-            },
-            {
-              "id": "regionDown",
-              "type": "button",
-              "label": "Rgn dn",
-              "action": "regionDown"
-            }
-          ]
+          "id": "stampDome",
+          "type": "button",
+          "label": "Stamp: DOME"
+        },
+        {
+          "id": "crossSection",
+          "type": "button",
+          "label": "Cross-section"
+        },
+        {
+          "id": "regionOffset",
+          "type": "button",
+          "label": "Region offset"
+        },
+        {
+          "id": "regionUp",
+          "type": "button",
+          "label": "Rgn up"
+        },
+        {
+          "id": "regionDown",
+          "type": "button",
+          "label": "Rgn dn"
         }
       ]
     },
-
 
     {
       "id": "erosionEarthwork",
       "title": "EROSION / EARTHWORK",
       "icon": "≈",
-      "type": "tools",
-
       "items": [
         {
           "id": "erodeWater",
           "type": "button",
-          "label": "Erode (water)",
-          "action": "erodeWater"
+          "label": "Erode (water)"
         },
-
         {
           "id": "talus",
           "type": "button",
-          "label": "Talus",
-          "action": "talus"
+          "label": "Talus"
         },
-
         {
           "id": "balanceCutFill",
           "type": "button",
           "label": "Balance cut/fill",
-          "wide": true,
-          "action": "balanceCutFill"
+          "wide": true
         }
       ]
     },
-
 
     {
       "id": "symbols",
       "title": "SYMBOLS",
       "icon": "✥",
-      "type": "symbols",
-
       "items": [
-
         {
           "id": "radar",
           "type": "symbolCategory",
           "label": "Radar",
           "icon": "◈",
-          "action": "openSymbolPicker",
-
           "symbols": [
-
             {
               "id": "groundSurveillanceRadar",
               "name": "Ground Surveillance Radar",
               "sidc": "10035000001103000800"
             },
-
             {
               "id": "earlyWarningRadar",
               "name": "Early Warning Radar",
               "sidc": "10035000001103001600"
             },
-
             {
               "id": "fireControlRadar",
               "name": "Fire Control Radar",
               "sidc": "10035000001103001700"
             },
-
             {
               "id": "airDefenseRadar",
               "name": "Air Defense Radar",
@@ -300,34 +227,27 @@
           ]
         },
 
-
         {
           "id": "tank",
           "type": "symbolCategory",
           "label": "Tank",
           "icon": "▣",
-          "action": "openSymbolPicker",
-
           "symbols": [
-
             {
               "id": "tank",
               "name": "Tank",
               "sidc": "10031500001202000000"
             },
-
             {
               "id": "lightTank",
               "name": "Light Tank",
               "sidc": "10031500001202010000"
             },
-
             {
               "id": "mediumTank",
               "name": "Medium Tank",
               "sidc": "10031500001202020000"
             },
-
             {
               "id": "heavyTank",
               "name": "Heavy Tank",
@@ -336,34 +256,27 @@
           ]
         },
 
-
         {
           "id": "missile",
           "type": "symbolCategory",
           "label": "Missile",
           "icon": "▲",
-          "action": "openSymbolPicker",
-
           "symbols": [
-
             {
               "id": "missile",
               "name": "Missile",
               "sidc": "10030200001100000000"
             },
-
             {
               "id": "surfaceToSurfaceMissile",
               "name": "Surface-to-Surface Missile",
               "sidc": "10030200001100000202"
             },
-
             {
               "id": "surfaceToAirMissile",
               "name": "Surface-to-Air Missile",
               "sidc": "10030200001100000201"
             },
-
             {
               "id": "airToSurfaceMissile",
               "name": "Air-to-Surface Missile",
@@ -372,34 +285,27 @@
           ]
         },
 
-
         {
           "id": "sam",
           "type": "symbolCategory",
           "label": "SAM",
           "icon": "△",
-          "action": "openSymbolPicker",
-
           "symbols": [
-
             {
               "id": "surfaceToAirMissile",
               "name": "Surface-to-Air Missile",
               "sidc": "10030200001100000201"
             },
-
             {
               "id": "shortRangeSam",
               "name": "Short Range SAM",
               "sidc": "10031500001111010000"
             },
-
             {
               "id": "mediumAirDefenseMissileLauncher",
               "name": "Medium Air Defense Missile Launcher",
               "sidc": "10031500001111040000"
             },
-
             {
               "id": "s400",
               "name": "S-400 / SA-21",
@@ -408,35 +314,28 @@
           ]
         },
 
-
         {
           "id": "bomber",
           "type": "symbolCategory",
           "label": "Bomber",
           "icon": "✈",
           "wide": true,
-          "action": "openSymbolPicker",
-
           "symbols": [
-
             {
               "id": "bomber",
               "name": "Bomber",
               "sidc": "10030100001101030000"
             },
-
             {
               "id": "fighterBomber",
               "name": "Fighter-Bomber",
               "sidc": "10030100001101050000"
             },
-
             {
               "id": "attackStrikeAircraft",
               "name": "Attack / Strike Aircraft",
               "sidc": "10030100001101020000"
             },
-
             {
               "id": "reconnaissanceAircraft",
               "name": "Reconnaissance Aircraft",
@@ -447,51 +346,33 @@
       ]
     },
 
-
     {
       "id": "selectionMask",
       "title": "SELECTION / MASK",
       "icon": "⌾",
-      "type": "tools",
-
       "items": [
-
         {
           "id": "polygonSelect",
           "type": "button",
-          "label": "Polygon select",
-          "action": "polygonSelect"
+          "label": "Polygon select"
         },
-
         {
           "id": "mask",
           "type": "toggle",
           "label": "Mask",
           "value": false,
           "onLabel": "Mask: ON",
-          "offLabel": "Mask: OFF",
-          "action": "toggleMask"
+          "offLabel": "Mask: OFF"
         }
       ]
     }
   ],
 
-
   "status": {
-    "id": "panelStatus",
     "defaultText": "Terrain editor ready",
-
     "notification": {
-      "id": "toolNotification",
       "icon": "✓",
       "subtitle": "TOOL SELECTED"
     }
-  },
-
-
-  "symbolPicker": {
-    "id": "symbolPicker",
-    "title": "SYMBOL",
-    "closeAction": "closeSymbolPicker"
   }
 }

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,23 +13,21 @@
 
 <body>
 
-    <!-- =====================================================
-         TERRAIN TOOLS PANEL
-    ====================================================== -->
+    <!-- Terrain toolbar -->
+    <aside
+        id="terrainTools"
+        class="terrain-panel">
 
-    <aside class="terrain-panel" id="terrainTools">
-
-        <!-- JavaScript will build everything inside here -->
+        <!-- render.js builds the toolbar here -->
         <div id="terrainPanelContent"></div>
 
     </aside>
 
 
-    <!-- =====================================================
-         SYMBOL PICKER
-    ====================================================== -->
-
-    <div id="symbolPicker" class="symbol-picker">
+    <!-- Symbol subtype popup -->
+    <div
+        id="symbolPicker"
+        class="symbol-picker">
 
         <div class="symbol-picker-header">
 
@@ -37,8 +36,9 @@
             </span>
 
             <button
+                id="symbolPickerClose"
                 class="symbol-picker-close"
-                onclick="closeSymbolPicker()">
+                type="button">
                 ×
             </button>
 
@@ -52,15 +52,16 @@
     </div>
 
 
-    <!-- =====================================================
-         CENTER TOOL NOTIFICATION
-    ====================================================== -->
-
+    <!-- Center selection notification -->
     <div
         id="toolNotification"
         class="tool-notification">
 
-        <span class="notification-icon">✓</span>
+        <span
+            id="notificationIcon"
+            class="notification-icon">
+            ✓
+        </span>
 
         <div>
 
@@ -68,7 +69,7 @@
                 Terrain editor ready
             </div>
 
-            <small>
+            <small id="notificationSubtitle">
                 TOOL SELECTED
             </small>
 
@@ -77,12 +78,13 @@
     </div>
 
 
-    <!-- =====================================================
-         APPLICATION SCRIPT
-    ====================================================== -->
-
-    <script type="module" src="script.js"></script>
+    <!-- Main application -->
+    <script
+        type="module"
+        src="script.js">
+    </script>
 
 </body>
 
 </html>
+
