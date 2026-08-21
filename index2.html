@@ -1,21 +1,21 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terrain Tools - Tactical Suite</title>
-    <link rel="stylesheet" href="style13.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style11.css">
 </head>
 <body>
 
-    <!-- DUAL-COLUMN TACTICAL DOCK (RESIZABLE) -->
+    <!-- DUAL-COLUMN TACTICAL DOCK -->
     <aside class="tactical-menu-dock">
 
-        <!-- COLUMN 1: LEFT CATEGORY RAIL -->
+        <!-- COLUMN 1: LEFT CATEGORY RAIL (Dynamic) -->
         <div id="categoryRail" class="category-rail"></div>
 
-        <!-- COLUMN 2: ACTIVE TOOL DRAWER -->
+        <!-- COLUMN 2: ACTIVE TOOL DRAWER (Dynamic) -->
         <div class="tool-drawer">
             <!-- PANEL HEADER -->
             <div id="panelHeaderContainer"></div>
@@ -29,9 +29,6 @@
                 <span id="statusText">Terrain editor ready</span>
             </div>
         </div>
-
-        <!-- DRAGGABLE CORNER RESIZE HANDLE -->
-        <div id="dockResizeHandle" class="dock-resize-handle" title="Drag to resize"></div>
 
     </aside>
 
@@ -47,10 +44,5 @@
     <!-- Scripts -->
     <script type="module" src="render10.js"></script>
     <script type="module" src="script10.js"></script>
-    <!-- Map Container -->
-    <div id="map"></div>
-
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </body>
 </html>
