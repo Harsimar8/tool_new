@@ -3,278 +3,85 @@ import ms from "milsymbol";
 /* =====================================================
    MILITARY SYMBOLS
 ===================================================== */
-const symbolVariants = {
 
-    Radar: [
-
-        {
-            name: "Ground Surveillance Radar",
-            sidc: "10035000001103000800"
-        },
-
-        {
-            name: "Early Warning Radar",
-            sidc: "10035000001103001600"
-        },
-
-        {
-            name: "Fire Control Radar",
-            sidc: "10035000001103001700"
-        },
-
-        {
-            name: "Air Defense Radar",
-            sidc: "10035000001103000100"
-        }
-
-    ],
-
-
-    Tank: [
-
-        {
-            name: "Tank",
-            sidc: "10031500001202000000"
-        },
-
-        {
-            name: "Light Tank",
-            sidc: "10031500001202010000"
-        },
-
-        {
-            name: "Medium Tank",
-            sidc: "10031500001202020000"
-        },
-
-        {
-            name: "Heavy Tank",
-            sidc: "10031500001202030000"
-        }
-
-    ],
-
-
-    Missile: [
-
-        {
-            name: "Missile",
-            sidc: "10030200001100000000"
-        },
-
-        {
-            name: "Surface-to-Surface Missile",
-            sidc: "10030200001100000202"
-        },
-
-        {
-            name: "Surface-to-Air Missile",
-            sidc: "10030200001100000201"
-        },
-
-        {
-            name: "Air-to-Surface Missile",
-            sidc: "10030200001100000102"
-        }
-
-    ],
-
-
-    SAM: [
-
-        {
-            name: "Surface-to-Air Missile",
-            sidc: "10030200001100000201"
-        },
-
-        {
-            name: "Short Range SAM",
-            sidc: "10031500001111010000"
-        },
-
-        {
-            name: "Medium Air Defense Missile Launcher",
-            sidc: "10031500001111040000"
-        },
-
-        {
-            name: "S-400 / SA-21",
-            sidc: "10031500001111030000"
-        }
-
-    ],
-
-
-    Bomber: [
-
-        {
-            name: "Bomber",
-            sidc: "10030100001101030000"
-        },
-
-        {
-            name: "Fighter-Bomber",
-            sidc: "10030100001101050000"
-        },
-
-        {
-            name: "Attack / Strike Aircraft",
-            sidc: "10030100001101020000"
-        },
-
-        {
-            name: "Reconnaissance Aircraft",
-            sidc: "10030100001101110000"
-        }
-
-    ]
-
-};
-function openSymbolPicker(event, category) {
-
+function openSymbolPicker(event, categoryLabel) {
     event.stopPropagation();
 
-    const picker =
-        document.getElementById("symbolPicker");
-
-    const title =
-        document.getElementById("symbolPickerTitle");
-
-    const grid =
-        document.getElementById("symbolPickerGrid");
+    const picker = document.getElementById("symbolPicker");
+    const title = document.getElementById("symbolPickerTitle");
+    const grid = document.getElementById("symbolPickerGrid");
 
     if (!picker || !title || !grid) {
         console.error("Symbol picker elements not found");
         return;
     }
 
-    console.log("Opening symbol picker:", category);
-
-    title.textContent = category.toUpperCase();
-
+    title.textContent = categoryLabel.toUpperCase();
     grid.innerHTML = "";
 
-    const variants =
-        symbolVariants[category] || [];
+    // 1. JSON data se us category ke symbols dhoondhein
+    // (Maan kar chal rahe hain ki aapne fetched data ko global variable `appData` ya `toolData` mein rakha hai)
+    let variants = [];
+    if (window.terrainToolData && window.terrainToolData.sections) {
+        const symbolSection = window.terrainToolData.sections.find(sec => sec.id === "symbols");
+        if (symbolSection) {
+            const foundCategory = symbolSection.items.find(item => item.label === categoryLabel);
+            if (foundCategory && foundCategory.symbols) {
+                variants = foundCategory.symbols;
+            }
+        }
+    }
 
     variants.forEach(variant => {
+        const button = document.createElement("button");
+        button.className = "symbol-subtype";
 
-        const button =
-            document.createElement("button");
-
-        button.className =
-            "symbol-subtype";
-
-        const svg =
-            createMilSymbol(
-                variant.sidc,
-                35
-            );
+        const svg = createMilSymbol(variant.sidc, 35);
 
         button.innerHTML = `
-            <span class="symbol-subtype-icon">
-                ${svg}
-            </span>
-
-            <span class="symbol-subtype-name">
-                ${variant.name}
-            </span>
+            <span class="symbol-subtype-icon">${svg}</span>
+            <span class="symbol-subtype-name">${variant.name}</span>
         `;
 
         button.onclick = function (e) {
+            e.stopPropagation();
+            const alreadySelected = button.classList.contains("selected");
 
-    e.stopPropagation();
+            document.querySelectorAll(".symbol-subtype").forEach(btn => {
+                btn.classList.remove("selected");
+            });
 
-    const alreadySelected =
-        button.classList.contains("selected");
+            if (alreadySelected) {
+                hideNotification();
+                setStatus(variant.name + " deselected");
+                return;
+            }
 
-    // Deselect all symbols first
-    document
-        .querySelectorAll(".symbol-subtype")
-        .forEach(btn => {
-            btn.classList.remove("selected");
-        });
-
-    // Clicking the already-selected symbol = deselect
-    if (alreadySelected) {
-
-        hideNotification();
-
-        setStatus(
-            variant.name + " deselected"
-        );
-
-        return;
-    }
-
-    // Select this symbol
-    button.classList.add("selected");
-
-    // Show the same center notification
-    showNotification(
-        variant.name
-    );
-
-    setStatus(
-        variant.name + " selected"
-    );
-
-    console.log(
-        "Symbol selected:",
-        category,
-        variant.name
-    );
-};
+            button.classList.add("selected");
+            showNotification(variant.name);
+            setStatus(variant.name + " selected");
+        };
 
         grid.appendChild(button);
-
     });
 
-    /* Position popup beside the clicked button */
-
-    const buttonRect =
-        event.currentTarget.getBoundingClientRect();
-
-    let left =
-        buttonRect.right + 10;
-
-    let top =
-        buttonRect.top;
+    // Popup positioning logic same rahega...
+    const buttonRect = event.currentTarget.getBoundingClientRect();
+    let left = buttonRect.right + 10;
+    let top = buttonRect.top;
 
     const popupWidth = 330;
     const popupHeight = 300;
 
-    if (
-        left + popupWidth >
-        window.innerWidth - 10
-    ) {
-
-        left =
-            buttonRect.left -
-            popupWidth -
-            10;
+    if (left + popupWidth > window.innerWidth - 10) {
+        left = buttonRect.left - popupWidth - 10;
+    }
+    if (top + popupHeight > window.innerHeight - 10) {
+        top = window.innerHeight - popupHeight - 10;
     }
 
-    if (
-        top + popupHeight >
-        window.innerHeight - 10
-    ) {
-
-        top =
-            window.innerHeight -
-            popupHeight -
-            10;
-    }
-
-    left = Math.max(10, left);
-    top = Math.max(10, top);
-
-    picker.style.left =
-        left + "px";
-
-    picker.style.top =
-        top + "px";
-
+    picker.style.left = Math.max(10, left) + "px";
+    picker.style.top = Math.max(10, top) + "px";
     picker.classList.add("show");
 }
 

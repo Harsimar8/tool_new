@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
         const response = await fetch("tools.json");
         const data = await response.json();
-        
+        window.terrainToolData = data;
         renderHeader(data.panel);
         renderSections(data.sections);
     } catch (error) {
@@ -70,12 +70,12 @@ function renderSections(sections) {
                         </button>`;
                 } else {
                     const iconHTML = item.icon ? `<span class="button-icon">${item.icon}</span>` : "";
-                    
+
                     // Check if it's an action button (Undo, Redo, Reset)
                     const lowerId = (item.id || "").toLowerCase();
                     const lowerLabel = (item.label || "").toLowerCase();
-                    const isAction = lowerId.includes("undo") || lowerId.includes("redo") || lowerId.includes("reset") || 
-                                     lowerLabel.includes("undo") || lowerLabel.includes("redo") || lowerLabel.includes("reset");
+                    const isAction = lowerId.includes("undo") || lowerId.includes("redo") || lowerId.includes("reset") ||
+                        lowerLabel.includes("undo") || lowerLabel.includes("redo") || lowerLabel.includes("reset");
 
                     const actionHandler = isAction
                         ? `performAction('${item.label.replace(" terrain", "")}')`
@@ -129,34 +129,20 @@ function renderSections(sections) {
                     `;
                 }
             }
-            else if (item.type === "symbolCategory") {
-                if (buttonGridActive) {
-                    html += `</div>`;
-                    buttonGridActive = false;
-                }
-                if (!symbolGridActive) {
-                    html += `<div class="symbol-category-grid">`;
-                    symbolGridActive = true;
-                }
-
-                html += `
-                    <button class="symbol-category-button${isWide}" onclick="openSymbolPicker(event, '${item.label}')">
-                        <span class="symbol-category-icon">${item.icon}</span>
-                        <span class="symbol-category-name">${item.label}</span>
-                    </button>
-                `;
-            }
-            else if (item.type === "toggle") {
-                if (!buttonGridActive && !symbolGridActive) {
-                    html += `<div class="button-grid">`;
-                    buttonGridActive = true;
-                }
-                html += `
-                    <button class="tool-button${isWide}" id="maskButton" onclick="toggleMask(event)" data-enabled="false">
-                        ${item.offLabel}
-                    </button>
-                `;
-            }
+           else if (item.type === "symbolCategory") {
+    // Agar button grid active nahi hai, toh symbols ke liye grid shuru karo
+    if (!buttonGridActive && !symbolGridActive) {
+        html += `<div class="button-grid">`;
+        buttonGridActive = true;
+    }
+    
+    html += `
+        <button class="symbol-category-button${item.wide ? ' wide' : ''}" onclick="openSymbolPicker(event, '${item.label}')">
+            <span class="symbol-category-icon">${item.icon}</span>
+            <span class="symbol-category-name">${item.label}</span>
+        </button>
+    `;
+}
 
             // Close active grids if it's the last item
             if (index === section.items.length - 1) {
