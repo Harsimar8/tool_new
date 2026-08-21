@@ -1,41 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terrain Tools</title>
-    <link rel="stylesheet" href="style7.css">
+    <title>Terrain Tools - Tactical Suite</title>
+    <link rel="stylesheet" href="style8.css">
 </head>
-
 <body>
 
-    <aside class="terrain-panel">
+    <!-- DUAL-COLUMN TACTICAL DOCK -->
+    <aside class="tactical-menu-dock">
 
-        <!-- HEADER (Dynamic) -->
-        <div id="panelHeaderContainer"></div>
+        <!-- COLUMN 1: LEFT CATEGORY RAIL (Dynamic) -->
+        <div id="categoryRail" class="category-rail"></div>
 
-        <!-- CONTROL SECTIONS (Dynamic) -->
-        <div id="dynamicPanelContent"></div>
+        <!-- COLUMN 2: ACTIVE TOOL DRAWER (Dynamic) -->
+        <div class="tool-drawer">
+            <!-- PANEL HEADER -->
+            <div id="panelHeaderContainer"></div>
 
-        <!-- STATUS -->
-        <div class="panel-status">
-            <span class="status-dot"></span>
-            <span id="statusText">Terrain editor ready</span>
+            <!-- DYNAMIC SECTIONS -->
+            <div id="dynamicPanelContent"></div>
+
+            <!-- STATUS BAR -->
+            <div class="panel-status">
+                <span class="status-dot"></span>
+                <span id="statusText">Terrain editor ready</span>
+            </div>
         </div>
 
     </aside>
 
-    <!-- SYMBOL PICKER -->
-    <div id="symbolPicker" class="symbol-picker">
-        <div class="symbol-picker-header">
-            <span id="symbolPickerTitle">RADAR</span>
-            <button class="symbol-picker-close" onclick="closeSymbolPicker()">×</button>
-        </div>
-        <div id="symbolPickerGrid" class="symbol-picker-grid"></div>
-    </div>
-
-    <!-- CENTER NOTIFICATION -->
+    <!-- CENTER NOTIFICATION TOAST -->
     <div id="toolNotification" class="tool-notification">
         <span class="notification-icon">✓</span>
         <div>
@@ -44,10 +40,8 @@
         </div>
     </div>
 
-    <!-- Load render script first, then main logic -->
+    <!-- Scripts -->
     <script type="module" src="render.js"></script>
     <script type="module" src="script.js"></script>
-
 </body>
-
 </html>

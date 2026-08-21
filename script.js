@@ -1,476 +1,162 @@
-import ms from "milsymbol";
-
 /* =====================================================
-   MILITARY SYMBOLS
+   TAB SWITCHING & SEARCH FILTERING
 ===================================================== */
 
-function openSymbolPicker(event, categoryLabel) {
-    event.stopPropagation();
+function switchSection(sectionId, btn) {
+    // 1. Update Rail Buttons
+    document.querySelectorAll(".rail-btn").forEach(b => b.classList.remove("active"));
+    if (btn) btn.classList.add("active");
 
-    const picker = document.getElementById("symbolPicker");
-    const title = document.getElementById("symbolPickerTitle");
-    const grid = document.getElementById("symbolPickerGrid");
+    // 2. Switch Contextual Drawer
+    document.querySelectorAll(".drawer-section").forEach(sec => sec.style.display = "none");
+    const target = document.getElementById(`section-${sectionId}`);
+    if (target) {
+        target.style.display = "flex";
+    }
 
-    if (!picker || !title || !grid) {
-        console.error("Symbol picker elements not found");
+    setStatus(`Opened ${sectionId.toUpperCase()} panel`);
+}
+
+function filterCards() {
+    const input = document.getElementById("symbolSearch");
+    if (!input) return;
+    const query = input.value.toLowerCase();
+    const cards = document.querySelectorAll(".tactical-symbol-card");
+
+    cards.forEach(card => {
+        const name = (card.getAttribute("data-name") || "").toLowerCase();
+        card.style.display = name.includes(query) ? "flex" : "none";
+    });
+}
+
+function filterCategory(catId, pill) {
+    document.querySelectorAll(".filter-pill").forEach(p => p.classList.remove("active"));
+    if (pill) pill.classList.add("active");
+
+    const cards = document.querySelectorAll(".tactical-symbol-card");
+    cards.forEach(card => {
+        if (catId === "all" || card.getAttribute("data-category") === catId) {
+            card.style.display = "flex";
+        } else {
+            card.style.display = "none";
+        }
+    });
+}
+
+function selectSymbolCard(card, name) {
+    const wasActive = card.classList.contains("selected");
+    document.querySelectorAll(".tactical-symbol-card").forEach(c => c.classList.remove("selected"));
+
+    if (wasActive) {
+        hideNotification();
+        setStatus(`${name} deselected`);
         return;
     }
 
-    title.textContent = categoryLabel.toUpperCase();
-    grid.innerHTML = "";
-
-    // 1. JSON data se us category ke symbols dhoondhein
-    // (Maan kar chal rahe hain ki aapne fetched data ko global variable `appData` ya `toolData` mein rakha hai)
-    let variants = [];
-    if (window.terrainToolData && window.terrainToolData.sections) {
-        const symbolSection = window.terrainToolData.sections.find(sec => sec.id === "symbols");
-        if (symbolSection) {
-            const foundCategory = symbolSection.items.find(item => item.label === categoryLabel);
-            if (foundCategory && foundCategory.symbols) {
-                variants = foundCategory.symbols;
-            }
-        }
-    }
-
-    variants.forEach(variant => {
-        const button = document.createElement("button");
-        button.className = "symbol-subtype";
-
-        const svg = createMilSymbol(variant.sidc, 35);
-
-        button.innerHTML = `
-            <span class="symbol-subtype-icon">${svg}</span>
-            <span class="symbol-subtype-name">${variant.name}</span>
-        `;
-
-        button.onclick = function (e) {
-            e.stopPropagation();
-            const alreadySelected = button.classList.contains("selected");
-
-            document.querySelectorAll(".symbol-subtype").forEach(btn => {
-                btn.classList.remove("selected");
-            });
-
-            if (alreadySelected) {
-                hideNotification();
-                setStatus(variant.name + " deselected");
-                return;
-            }
-
-            button.classList.add("selected");
-            showNotification(variant.name);
-            setStatus(variant.name + " selected");
-        };
-
-        grid.appendChild(button);
-    });
-
-    // Popup positioning logic same rahega...
-    const buttonRect = event.currentTarget.getBoundingClientRect();
-    let left = buttonRect.right + 10;
-    let top = buttonRect.top;
-
-    const popupWidth = 330;
-    const popupHeight = 300;
-
-    if (left + popupWidth > window.innerWidth - 10) {
-        left = buttonRect.left - popupWidth - 10;
-    }
-    if (top + popupHeight > window.innerHeight - 10) {
-        top = window.innerHeight - popupHeight - 10;
-    }
-
-    picker.style.left = Math.max(10, left) + "px";
-    picker.style.top = Math.max(10, top) + "px";
-    picker.classList.add("show");
+    card.classList.add("selected");
+    showNotification(name);
+    setStatus(`Armed: ${name}`);
 }
-
-function closeSymbolPicker() {
-
-    const picker =
-        document.getElementById("symbolPicker");
-
-    if (!picker) return;
-
-    picker.classList.remove("show");
-}
-
-
-function createMilSymbol(sidc, size = 55) {
-
-    const symbol = new ms.Symbol(sidc, {
-        size: size
-    });
-
-    return symbol.asSVG();
-}
-
-
 
 /* =====================================================
-   TERRAIN STATE
+   TERRAIN STATE & VALUES
 ===================================================== */
 let radius = 1500;
 let power = 2.0;
 let maxHeight = 499;
-
-let statusTimer;
-let notificationTimer;
-
-
-/* =====================================================
-   SECTION DROPDOWNS
-===================================================== */
-
-function toggleSection(header) {
-    header.closest(".control-section").classList.toggle("open");
-}
-
-
-/* =====================================================
-   SELECTION
-===================================================== */
+let statusTimer, notificationTimer;
 
 function selectOption(button, name) {
+    const wasSelected = button.classList.contains("selected");
+    const parent = button.closest(".drawer-section");
+    
+    if (parent) {
+        parent.querySelectorAll(".tool-button.selected, .mode-button.selected")
+              .forEach(btn => btn.classList.remove("selected"));
+    }
 
-    const section = button.closest(".control-section");
-    const selected = button.classList.contains("selected");
-
-    section.querySelectorAll(".tool-button.selected")
-        .forEach(btn => btn.classList.remove("selected"));
-
-    // Clicking the already-selected button = deselect
-    if (selected) {
+    if (wasSelected) {
         hideNotification();
-        setStatus(name + " deselected");
+        setStatus(`${name} deselected`);
         return;
     }
 
     button.classList.add("selected");
-
     showNotification(name);
-    setStatus(name + " selected");
+    setStatus(`${name} selected`);
 }
-
-
-/* =====================================================
-   BRUSH MODE
-===================================================== */
-
-
-function selectBrushMode(button) {
-
-    const selected = button.classList.contains("selected");
-
-    document
-        .querySelectorAll(".mode-button")
-        .forEach(btn => btn.classList.remove("selected"));
-
-    if (selected) {
-        hideNotification();
-        setStatus(button.innerText.trim() + " deselected");
-        return;
-    }
-
-    button.classList.add("selected");
-
-    const name = button.innerText.trim();
-
-    showNotification(name);
-    setStatus(name + " selected");
-}
-
-
-/* =====================================================
-   TERRAIN TOOL
-===================================================== */
-
-function activateTool(button) {
-
-    const name = button.innerText.trim();
-
-    selectOption(button, name);
-}
-
-
-/* =====================================================
-   VALUE CONTROLS
-===================================================== */
 
 function changeRadius(amount) {
-
-    radius = clamp(radius + amount, 100, 10000);
-
+    radius = Math.max(100, Math.min(10000, radius + amount));
     update("radiusValue", radius + " m");
-
     setStatus("Brush radius: " + radius + " m");
 }
 
-
 function changePower(amount) {
-
-    power = clamp(power + amount, 0, 100);
-    power = Math.round(power * 10) / 10;
-
+    power = Math.round((Math.max(0, Math.min(100, power + amount))) * 10) / 10;
     update("powerValue", power.toFixed(1) + " m");
-
     setStatus("Brush power: " + power.toFixed(1) + " m");
 }
 
-
 function changeMaxHeight(amount) {
-
-    maxHeight = clamp(maxHeight + amount, 0, 10000);
-
+    maxHeight = Math.max(0, Math.min(10000, maxHeight + amount));
     update("maxHeightValue", maxHeight + " m");
-
     setStatus("Maximum height: " + maxHeight + " m");
 }
 
-
-function clamp(value, min, max) {
-    return Math.min(Math.max(value, min), max);
-}
-
-
-function update(id, value) {
-    const element = document.getElementById(id);
-    if (element) element.textContent = value;
-}
-
-
-/* =====================================================
-   INPUT STEPPERS
-===================================================== */
-
 function changeInput(id, amount) {
-
     const input = document.getElementById(id);
-
     if (!input) return;
-
     input.value = Math.max(0, Number(input.value) + amount);
-
-    setStatus(
-        input.id + ": " + input.value
-    );
+    setStatus(input.id + ": " + input.value);
 }
-
-
-/* =====================================================
-   MASK
-===================================================== */
-
-function toggleMask(event) {
-
-    if (event) event.stopPropagation();
-
-    const button = document.getElementById("maskButton");
-
-    const enabled =
-        button.dataset.enabled === "true";
-
-    button.dataset.enabled = String(!enabled);
-
-    button.textContent =
-        `Mask: ${enabled ? "OFF" : "ON"}`;
-
-    button.classList.toggle(
-        "mask-on",
-        !enabled
-    );
-
-    showNotification(
-        `Terrain Mask ${enabled ? "OFF" : "ON"}`
-    );
-
-    setStatus(
-        `Terrain mask ${enabled ? "disabled" : "enabled"}`
-    );
-}
-
-
-/* =====================================================
-   UNDO / REDO / RESET
-===================================================== */
 
 function performAction(action) {
-
-    // Actions are momentary, so remove selection
-    document
-        .querySelectorAll(".tool-button.selected, .mode-button.selected")
-        .forEach(btn => {
-            btn.classList.remove("selected");
-        });
-
+    document.querySelectorAll(".tool-button.selected, .mode-button.selected")
+            .forEach(btn => btn.classList.remove("selected"));
     showNotification(action);
-
-    setStatus(
-        action === "Undo"
-            ? "Undo terrain change"
-            : action === "Redo"
-                ? "Redo terrain change"
-                : "Terrain reset"
-    );
+    setStatus(`Action: ${action}`);
 }
 
+function update(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+}
 
 /* =====================================================
-   CENTER NOTIFICATION
+   NOTIFICATIONS & STATUS
 ===================================================== */
+function showNotification(name) {
+    const notif = document.getElementById("toolNotification");
+    const text = document.getElementById("notificationText");
+    if (!notif || !text) return;
+    text.textContent = name;
+    notif.classList.add("show");
+    clearTimeout(notificationTimer);
+    notificationTimer = setTimeout(() => notif.classList.remove("show"), 1500);
+}
 
 function hideNotification() {
-    const notification =
-        document.getElementById("toolNotification");
-
-    if (notification) {
-        notification.classList.remove("show");
-    }
+    const notif = document.getElementById("toolNotification");
+    if (notif) notif.classList.remove("show");
 }
-
-
-function showNotification(name) {
-
-    const notification =
-        document.getElementById("toolNotification");
-
-    const text =
-        document.getElementById("notificationText");
-
-    if (!notification || !text) return;
-
-    text.textContent = name;
-
-    notification.classList.add("show");
-
-    clearTimeout(notificationTimer);
-
-    notificationTimer = setTimeout(() => {
-        notification.classList.remove("show");
-    }, 1500);
-}
-
-
-/* =====================================================
-   STATUS BAR
-===================================================== */
 
 function setStatus(message) {
-
-    const status =
-        document.getElementById("statusText");
-
+    const status = document.getElementById("statusText");
     if (!status) return;
-
     status.textContent = message;
-
     clearTimeout(statusTimer);
-
-    statusTimer = setTimeout(() => {
-        status.textContent =
-            "Terrain editor ready";
-    }, 2500);
+    statusTimer = setTimeout(() => { status.textContent = "Terrain editor ready"; }, 2500);
 }
 
-
-/* =====================================================
-   PANEL RESIZE
-===================================================== */
-
-const panel = document.querySelector(".terrain-panel");
-
-let resizing = false;
-let startX = 0;
-let startY = 0;
-let startWidth = 0;
-let startHeight = 0;
-
-const MIN_WIDTH = 320;
-const MAX_WIDTH = 650;
-
-const MIN_HEIGHT = 350;
-
-function isResizeCorner(event) {
-
-    const rect = panel.getBoundingClientRect();
-
-    return (
-        event.clientX >= rect.right - 22 &&
-        event.clientY >= rect.bottom - 22
-    );
-}
-
-panel.addEventListener("pointerdown", event => {
-
-    if (!isResizeCorner(event)) return;
-
-    resizing = true;
-
-    startX = event.clientX;
-    startY = event.clientY;
-
-    startWidth = panel.offsetWidth;
-    startHeight = panel.offsetHeight;
-
-    panel.classList.add("resizing");
-
-    panel.setPointerCapture(event.pointerId);
-
-    event.preventDefault();
-});
-
-panel.addEventListener("pointermove", event => {
-
-    if (!resizing) return;
-
-    const width =
-        Math.min(
-            MAX_WIDTH,
-            Math.max(
-                MIN_WIDTH,
-                startWidth + event.clientX - startX
-            )
-        );
-
-    const height =
-        Math.min(
-            window.innerHeight * 0.9,
-            Math.max(
-                MIN_HEIGHT,
-                startHeight + event.clientY - startY
-            )
-        );
-
-    panel.style.width = width + "px";
-    panel.style.height = height + "px";
-});
-
-panel.addEventListener("pointerup", () => {
-
-    if (!resizing) return;
-
-    resizing = false;
-
-    panel.classList.remove("resizing");
-});
-
-panel.addEventListener("pointercancel", () => {
-
-    resizing = false;
-
-    panel.classList.remove("resizing");
-});
-
-
-window.toggleSection = toggleSection;
+// Attach globals for HTML handlers
+window.switchSection = switchSection;
+window.filterCards = filterCards;
+window.filterCategory = filterCategory;
+window.selectSymbolCard = selectSymbolCard;
 window.selectOption = selectOption;
-window.selectBrushMode = selectBrushMode;
-window.activateTool = activateTool;
 window.changeRadius = changeRadius;
 window.changePower = changePower;
 window.changeMaxHeight = changeMaxHeight;
 window.changeInput = changeInput;
-window.toggleMask = toggleMask;
 window.performAction = performAction;
-window.openSymbolPicker = openSymbolPicker;
-window.closeSymbolPicker = closeSymbolPicker;

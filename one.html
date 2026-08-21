@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tactical Mission & ORBAT Tool Menu Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --hud-bg: rgba(10, 16, 28, 0.88);
+      --hud-card: rgba(16, 26, 44, 0.75);
+      --hud-card-hover: rgba(22, 36, 61, 0.9);
+      --hud-card-active: rgba(0, 229, 255, 0.12);
+      
+      --hud-cyan: #00e5ff;
+      --hud-cyan-dim: rgba(0, 229, 255, 0.22);
+      --hud-cyan-glow: 0 0 16px rgba(0, 229, 255, 0.45);
+      
+      --hud-amber: #ffb300;
+      --hud-amber-dim: rgba(255, 179, 0, 0.25);
+      --hud-amber-glow: 0 0 16px rgba(255, 179, 0, 0.45);
+
+      --hud-green: #10b981;
+      --hud-border: rgba(0, 229, 255, 0.18);
+      --hud-text: #e2e8f0;
+      --hud-text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background: #070c14;
+      background-image: 
+        radial-gradient(circle at 50% 50%, rgba(0, 229, 255, 0.04) 0%, transparent 60%),
+        linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 32px 32px, 32px 32px;
+      font-family: 'Inter', sans-serif;
+      color: var(--hud-text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    /* CONTAINER LAYOUT */
+    .editor-container {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    /* THE DUAL-COLUMN TOOL MENU DOCK */
+    .tactical-menu-dock {
+      display: flex;
+      background: var(--hud-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--hud-border);
+      border-radius: 12px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 229, 255, 0.08);
+      overflow: hidden;
+      height: 640px;
+    }
+
+    /* COLUMN 1: CATEGORY RAIL */
+    .category-rail {
+      width: 64px;
+      background: rgba(8, 12, 22, 0.9);
+      border-right: 1px solid var(--hud-border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 0;
+      gap: 8px;
+      z-index: 2;
+    }
+
+    .rail-header-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--hud-cyan);
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--hud-border);
+      padding-bottom: 12px;
+      width: 100%;
+    }
+
+    .rail-btn {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      color: var(--hud-text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .rail-btn svg {
+      width: 22px;
+      height: 22px;
+      transition: transform 0.2s ease;
+    }
+
+    .rail-btn:hover {
+      background: rgba(0, 229, 255, 0.08);
+      color: var(--hud-cyan);
+      border-color: var(--hud-cyan-dim);
+    }
+
+    .rail-btn.active {
+      background: rgba(0, 229, 255, 0.15);
+      color: var(--hud-cyan);
+      border-color: var(--hud-cyan);
+      box-shadow: var(--hud-cyan-glow);
+    }
+
+    .rail-btn.active::before {
+      content: '';
+      position: absolute;
+      left: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 24px;
+      background: var(--hud-cyan);
+      border-radius: 0 4px 4px 0;
+      box-shadow: 0 0 10px var(--hud-cyan);
+    }
+
+    /* Tooltip */
+    .rail-btn::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 56px;
+      background: rgba(10, 16, 28, 0.95);
+      border: 1px solid var(--hud-cyan);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-4px);
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      z-index: 10;
+    }
+
+    .rail-btn:hover::after {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* COLUMN 2: DYNAMIC TOOL DRAWER */
+    .tool-drawer {
+      width: 330px;
+      display: flex;
+      flex-direction: column;
+      background: transparent;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    .drawer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--hud-border);
+    }
+
+    .drawer-title {
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #fff;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .drawer-title span {
+      color: var(--hud-cyan);
+    }
+
+    .badge-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      background: var(--hud-cyan-dim);
+      color: var(--hud-cyan);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      padding: 2px 6px;
+      border-radius: 10px;
+    }
+
+    /* SEARCH BAR */
+    .search-box {
+      position: relative;
+      margin-bottom: 12px;
+    }
+
+    .search-input {
+      width: 100%;
+      background: rgba(14, 22, 38, 0.9);
+      border: 1px solid var(--hud-border);
+      border-radius: 6px;
+      padding: 8px 12px 8px 34px;
+      font-size: 12px;
+      color: #fff;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--hud-cyan);
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
+      background: rgba(18, 28, 48, 0.95);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--hud-text-muted);
+      width: 15px;
+      height: 15px;
+      pointer-events: none;
+    }
+
+    /* FILTER PILLS */
+    .filter-pills {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+      scrollbar-width: none;
+    }
+
+    .filter-pill {
+      background: rgba(20, 32, 54, 0.6);
+      border: 1px solid var(--hud-border);
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--hud-text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .filter-pill:hover {
+      color: #fff;
+      border-color: var(--hud-cyan-dim);
+    }
+
+    .filter-pill.active {
+      background: var(--hud-cyan-dim);
+      border-color: var(--hud-cyan);
+      color: var(--hud-cyan);
+      box-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
+    }
+
+    /* 2-COLUMN SYMBOL GRID */
+    .symbol-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    /* TACTICAL CARD */
+    .tactical-card {
+      position: relative;
+      background: var(--hud-card);
+      border: 1px solid var(--hud-border);
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 120px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .tactical-card:hover {
+      background: var(--hud-card-hover);
+      border-color: var(--hud-cyan);
+      box-shadow: 0 4px 16px rgba(0, 229, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .tactical-card.active {
+      background: var(--hud-card-active);
+      border-color: var(--hud-amber);
+      box-shadow: var(--hud-amber-glow);
+    }
+
+    /* Tactical Corner Brackets for Active Card */
+    .tactical-card.active::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: -1px;
+      width: 7px;
+      height: 7px;
+      border-top: 2px solid var(--hud-amber);
+      border-left: 2px solid var(--hud-amber);
+    }
+
+    .tactical-card.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+      width: 7px;
+      height: 7px;
+      border-bottom: 2px solid var(--hud-amber);
+      border-right: 2px solid var(--hud-amber);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      font-weight: 600;
+      color: var(--hud-text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .status-led {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--hud-green);
+      box-shadow: 0 0 6px var(--hud-green);
+    }
+
+    .status-led.amber {
+      background: var(--hud-amber);
+      box-shadow: 0 0 6px var(--hud-amber);
+    }
+
+    .card-glyph-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 4px 0;
+    }
+
+    .card-glyph {
+      width: 44px;
+      height: 44px;
+      color: var(--hud-cyan);
+      filter: drop-shadow(0 0 6px rgba(0, 229, 255, 0.4));
+      transition: transform 0.2s ease;
+    }
+
+    .tactical-card.active .card-glyph {
+      color: var(--hud-amber);
+      filter: drop-shadow(0 0 8px rgba(255, 179, 0, 0.6));
+    }
+
+    .card-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .card-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.2;
+    }
+
+    .card-hotkey {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 1px 4px;
+      border-radius: 3px;
+      color: var(--hud-text-muted);
+    }
+
+    /* TERRAIN VIEW PANEL (NO DEAD SPACE) */
+    .terrain-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .toggle-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .tactical-toggle-tile {
+      background: var(--hud-card);
+      border: 1px solid var(--hud-border);
+      border-radius: 8px;
+      padding: 12px 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .tactical-toggle-tile:hover {
+      background: var(--hud-card-hover);
+      border-color: var(--hud-cyan-dim);
+    }
+
+    .tactical-toggle-tile.active {
+      background: rgba(0, 229, 255, 0.1);
+      border-color: var(--hud-cyan);
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
+    }
+
+    .tile-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .mini-switch {
+      width: 24px;
+      height: 13px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .mini-switch::after {
+      content: '';
+      position: absolute;
+      width: 9px;
+      height: 9px;
+      background: #fff;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.2s ease;
+    }
+
+    .tactical-toggle-tile.active .mini-switch {
+      background: var(--hud-cyan);
+    }
+
+    .tactical-toggle-tile.active .mini-switch::after {
+      transform: translateX(11px);
+    }
+
+    .tile-visual {
+      height: 20px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+    }
+
+    .spectrum-bar {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: linear-gradient(90deg, #3b82f6, #10b981, #eab308, #ef4444);
+    }
+
+    .contour-lines {
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0, 229, 255, 0.4) 3px, rgba(0, 229, 255, 0.4) 4px);
+    }
+
+    /* SLIDERS SECTION */
+    .slider-group {
+      background: rgba(14, 22, 38, 0.6);
+      border: 1px solid var(--hud-border);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .slider-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .slider-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .slider-val {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--hud-cyan);
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      height: 4px;
+      border-radius: 2px;
+      outline: none;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--hud-cyan);
+      cursor: pointer;
+      box-shadow: 0 0 8px var(--hud-cyan);
+      border: 2px solid #0a101c;
+    }
+
+    /* SCULPT BRUSH CURVE VISUALIZER */
+    .curve-box {
+      width: 100%;
+      height: 70px;
+      background: rgba(8, 14, 24, 0.8);
+      border: 1px solid var(--hud-border);
+      border-radius: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .curve-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* LIVE PREVIEW CANVAS (RIGHT SIDE DEMO) */
+    .preview-canvas {
+      flex: 1;
+      height: 640px;
+      background: rgba(12, 19, 32, 0.8);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--hud-border);
+      border-radius: 12px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    .canvas-hud-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Chakra Petch', sans-serif;
+    }
+
+    .canvas-info-chip {
+      background: rgba(0, 229, 255, 0.1);
+      border: 1px solid var(--hud-cyan);
+      color: var(--hud-cyan);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .canvas-center-msg {
+      text-align: center;
+      color: var(--hud-text-muted);
+    }
+
+    .canvas-center-msg h3 {
+      color: #fff;
+      margin-bottom: 6px;
+      font-family: 'Chakra Petch', sans-serif;
+      font-size: 18px;
+    }
+
+    .active-tool-banner {
+      background: rgba(16, 26, 44, 0.9);
+      border: 1px solid var(--hud-amber);
+      box-shadow: var(--hud-amber-glow);
+      padding: 12px 16px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: fit-content;
+    }
+
+    .active-tool-banner .icon {
+      color: var(--hud-amber);
+      width: 28px;
+      height: 28px;
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 229, 255, 0.3);
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="editor-container">
+    
+    <!-- DUAL COLUMN MENU DOCK -->
+    <div class="tactical-menu-dock">
+      
+      <!-- COLUMN 1: LEFT CATEGORY RAIL -->
+      <div class="category-rail">
+        <div class="rail-header-icon" title="Tactical Suite">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+            <polyline points="2 17 12 22 22 17"/>
+            <polyline points="2 12 12 17 22 12"/>
+          </svg>
+        </div>
+
+        <!-- Rail Buttons with Tooltips -->
+        <button class="rail-btn" data-tooltip="Terrain View" onclick="switchSection('terrain', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+        </button>
+
+        <button class="rail-btn active" data-tooltip="Tactical Symbols" onclick="switchSection('symbols', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </button>
+
+        <button class="rail-btn" data-tooltip="Sculpt Brush" onclick="switchSection('sculpt', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9.06 11.9 8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/>
+            <path d="M7.07 14.94c-1.66 0-3 1.34-3 3 0 1.31-1.16 1.7-1.67 1.87a.5.5 0 0 0-.1.95c1.4.67 3.32 1.24 5.37.5 1.83-.66 2.4-2.6 2.4-3.32 0-1.66-1.34-3-3-3z"/>
+          </svg>
+        </button>
+
+        <button class="rail-btn" data-tooltip="Shaping Tools" onclick="switchSection('shaping', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m3 15 4-4 4 4 6-6 4 4"/>
+          </svg>
+        </button>
+
+        <button class="rail-btn" data-tooltip="Erosion & Water" onclick="switchSection('erosion', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+          </svg>
+        </button>
+
+        <button class="rail-btn" data-tooltip="ORBAT Hierarchy" onclick="switchSection('orbat', this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- COLUMN 2: ACTIVE TOOL DRAWER -->
+      <div class="tool-drawer">
+        
+        <!-- SECTION 1: TACTICAL SYMBOLS (DEFAULT) -->
+        <div id="section-symbols" class="drawer-content">
+          <div class="drawer-header">
+            <div class="drawer-title">
+              <span>🎯</span> Tactical Symbols
+            </div>
+            <div class="badge-count" id="symbol-counter">6 Units</div>
+          </div>
+
+          <!-- Search Box -->
+          <div class="search-box">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" id="symbolSearch" class="search-input" placeholder="Search radar, SAM, air..." onkeyup="filterCards()">
+          </div>
+
+          <!-- Category Filter Pills -->
+          <div class="filter-pills">
+            <button class="filter-pill active" onclick="filterCategory('all', this)">ALL</button>
+            <button class="filter-pill" onclick="filterCategory('radar', this)">RADAR (3)</button>
+            <button class="filter-pill" onclick="filterCategory('sam', this)">SAM (2)</button>
+            <button class="filter-pill" onclick="filterCategory('air', this)">AIR (1)</button>
+          </div>
+
+          <!-- 2-Column Responsive Card Grid -->
+          <div class="symbol-grid" id="symbolGrid">
+            
+            <!-- Card 1: Early Warning EW -->
+            <div class="tactical-card active" data-category="radar" data-name="Early Warning Radar EW" onclick="selectCard(this, 'Early Warning Radar [EW]')">
+              <div class="card-top">
+                <span class="card-tag">EW RADAR</span>
+                <span class="status-led"></span>
+              </div>
+              <div class="card-glyph-container">
+                <svg class="card-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M12 20v-4M8 12a4 4 0 0 1 8 0M5 9a8 8 0 0 1 14 0M2 6a12 12 0 0 1 20 0"/>
+                  <circle cx="12" cy="16" r="2" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="card-bottom">
+                <div class="card-label">EW Radar</div>
+                <div class="card-hotkey">E</div>
+              </div>
+            </div>
+
+            <!-- Card 2: Ground Surveillance GSR -->
+            <div class="tactical-card" data-category="radar" data-name="Ground Surveillance Radar GSR" onclick="selectCard(this, 'Ground Surveillance [GSR]')">
+              <div class="card-top">
+                <span class="card-tag">GSR RADAR</span>
+                <span class="status-led"></span>
+              </div>
+              <div class="card-glyph-container">
+                <svg class="card-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M2 12h20M12 2a10 10 0 0 1 10 10M12 6a6 6 0 0 1 6 6"/>
+                  <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="card-bottom">
+                <div class="card-label">Ground Radar</div>
+                <div class="card-hotkey">G</div>
+              </div>
+            </div>
+
+            <!-- Card 3: Fire Control FCR -->
+            <div class="tactical-card" data-category="radar" data-name="Fire Control Radar FCR" onclick="selectCard(this, 'Fire Control Radar [FCR]')">
+              <div class="card-top">
+                <span class="card-tag">FCR RADAR</span>
+                <span class="status-led amber"></span>
+              </div>
+              <div class="card-glyph-container">
+                <svg class="card-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <circle cx="12" cy="12" r="9"/>
+                  <line x1="12" y1="3" x2="12" y2="7"/>
+                  <line x1="12" y1="17" x2="12" y2="21"/>
+                  <line x1="3" y1="12" x2="7" y2="12"/>
+                  <line x1="17" y1="12" x2="21" y2="12"/>
+                  <circle cx="12" cy="12" r="2" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="card-bottom">
+                <div class="card-label">Fire Control</div>
+                <div class="card-hotkey">F</div>
+              </div>
+            </div>
+
+            <!-- Card 4: Long Range SAM -->
+            <div class="tactical-card" data-category="sam" data-name="Long Range SAM Battery" onclick="selectCard(this, 'Long Range SAM Battery')">
+              <div class="card-top">
+                <span class="card-tag">SAM BATTERY</span>
+                <span class="status-led"></span>
+              </div>
+              <div class="card-glyph-container">
+                <svg class="card-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M4 19h16M6 19l6-14 6 14M9 12h6"/>
+                </svg>
+              </div>
+              <div class="card-bottom">
+                <div class="card-label">Long SAM</div>
+                <div class="card-hotkey">S</div>
+              </div>
+            </div>
+
+            <!-- Card 5: Air Defense Unit -->
+            <div class="tactical-card" data-category="sam" data-name="Short Air Defense AD" onclick="selectCard(this, 'Short Range Air Defense')">
+              <div class="card-top">
+                <span class="card-tag">AIR DEFENSE</span>
+                <span class="status-led"></span>
+              </div>
+              <div class="card-glyph-container">
+                <svg class="card-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M12 2l4 8-4 4-4-4 4-8z"/>
+                  <path d="M2 20h20"/>
+                </svg>
+              </div>
+              <div class="card-bottom">
+                <div class="card-label">AD Defense</div>
+                <div class="card-hotkey">A</div>
+              </div>
+            </div>
+
+            <!-- Card 6: Strike Fighter Jet -->
+            <div class="tactical-card" data-category="air" data-name="Strategic Strike Fighter Jet" onclick="selectCard(this, 'Strike Fighter Squadron')">
+              <div class="card-top">
+                <span class="card-tag">AVIATION</span>
+                <span class="status-led"></span>
+              </div>
+              <div class="card-glyph-container">
+                <svg class="card-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M12 2v20M2 11l10-3 10 3M7 19l5-2 5 2"/>
+                </svg>
+              </div>
+              <div class="card-bottom">
+                <div class="card-label">Strike Jet</div>
+                <div class="card-hotkey">J</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SECTION 2: TERRAIN VIEW (NO DEAD SPACE) -->
+        <div id="section-terrain" class="drawer-content" style="display: none;">
+          <div class="drawer-header">
+            <div class="drawer-title">
+              <span>🌐</span> Terrain View
+            </div>
+            <div class="badge-count">5 Overlays</div>
+          </div>
+
+          <div class="terrain-panel">
+            <div class="toggle-grid">
+              
+              <div class="tactical-toggle-tile active" onclick="toggleTile(this)">
+                <div class="tile-header">
+                  <span>Elevation Colors</span>
+                  <div class="mini-switch"></div>
+                </div>
+                <div class="tile-visual">
+                  <div class="spectrum-bar"></div>
+                </div>
+              </div>
+
+              <div class="tactical-toggle-tile active" onclick="toggleTile(this)">
+                <div class="tile-header">
+                  <span>Slope Shading</span>
+                  <div class="mini-switch"></div>
+                </div>
+                <div class="tile-visual" style="font-size: 10px; color: var(--hud-cyan);">
+                  Sun Angle 45°
+                </div>
+              </div>
+
+              <div class="tactical-toggle-tile active" onclick="toggleTile(this)">
+                <div class="tile-header">
+                  <span>Contours</span>
+                  <div class="mini-switch"></div>
+                </div>
+                <div class="tile-visual">
+                  <div class="contour-lines"></div>
+                </div>
+              </div>
+
+              <div class="tactical-toggle-tile" onclick="toggleTile(this)">
+                <div class="tile-header">
+                  <span>Water Level</span>
+                  <div class="mini-switch"></div>
+                </div>
+                <div class="tile-visual" style="font-size: 10px; color: var(--hud-text-muted);">
+                  Mesh Flood Off
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Parameters -->
+            <div class="slider-group">
+              <div class="slider-item">
+                <div class="slider-label-row">
+                  <span>Z-Exaggeration</span>
+                  <span class="slider-val" id="exag-val">1.8x</span>
+                </div>
+                <input type="range" min="1" max="5" step="0.1" value="1.8" oninput="document.getElementById('exag-val').innerText = this.value + 'x'">
+              </div>
+
+              <div class="slider-item">
+                <div class="slider-label-row">
+                  <span>Water Elevation</span>
+                  <span class="slider-val" id="water-val">42.5m</span>
+                </div>
+                <input type="range" min="0" max="200" step="0.5" value="42.5" oninput="document.getElementById('water-val').innerText = this.value + 'm'">
+              </div>
+
+              <div class="slider-item">
+                <div class="slider-label-row">
+                  <span>Contour Interval</span>
+                  <span class="slider-val" id="contour-val">25m</span>
+                </div>
+                <input type="range" min="5" max="100" step="5" value="25" oninput="document.getElementById('contour-val').innerText = this.value + 'm'">
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SECTION 3: SCULPT BRUSH -->
+        <div id="section-sculpt" class="drawer-content" style="display: none;">
+          <div class="drawer-header">
+            <div class="drawer-title">
+              <span>🖌️</span> Sculpt Brush
+            </div>
+            <div class="badge-count">Smooth Falloff</div>
+          </div>
+
+          <div class="terrain-panel">
+            <div class="curve-box">
+              <svg class="curve-svg" viewBox="0 0 200 70">
+                <path d="M 10 60 Q 60 10 100 10 T 190 60" fill="none" stroke="#00e5ff" stroke-width="2.5" />
+                <circle cx="100" cy="10" r="4" fill="#ffb300" />
+              </svg>
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-item">
+                <div class="slider-label-row">
+                  <span>Brush Radius</span>
+                  <span class="slider-val" id="brush-radius">35 px</span>
+                </div>
+                <input type="range" min="5" max="100" value="35" oninput="document.getElementById('brush-radius').innerText = this.value + ' px'">
+              </div>
+
+              <div class="slider-item">
+                <div class="slider-label-row">
+                  <span>Sculpt Strength</span>
+                  <span class="slider-val" id="brush-str">60 %</span>
+                </div>
+                <input type="range" min="1" max="100" value="60" oninput="document.getElementById('brush-str').innerText = this.value + ' %'">
+              </div>
+
+              <div class="slider-item">
+                <div class="slider-label-row">
+                  <span>Hardness</span>
+                  <span class="slider-val" id="brush-hard">22 %</span>
+                </div>
+                <input type="range" min="0" max="100" value="22" oninput="document.getElementById('brush-hard').innerText = this.value + ' %'">
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- CANVAS VIEW SIMULATOR -->
+    <div class="preview-canvas">
+      <div class="canvas-hud-header">
+        <div class="canvas-info-chip">TACTICAL MAP SIMULATOR v2.4</div>
+        <div style="font-family: 'JetBrains Mono'; font-size: 11px; color: var(--hud-text-muted);">
+          LAT: 34.0522° N | LON: 118.2437° W | ZOOM: 100%
+        </div>
+      </div>
+
+      <div class="canvas-center-msg">
+        <h3>INTERACTIVE DOCK PREVIEW</h3>
+        <p>Switch categories on the left rail or search tactical symbols above.</p>
+      </div>
+
+      <div class="active-tool-banner">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+        <div>
+          <div style="font-size: 10px; color: var(--hud-amber); font-weight: 700; letter-spacing: 0.05em;">ARMED / ACTIVE PLACEMENT TOOL:</div>
+          <div id="active-tool-name" style="font-size: 14px; font-weight: 700; color: #fff;">Early Warning Radar [EW]</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // TAB SWITCHER
+    function switchSection(sectionId, btn) {
+      document.querySelectorAll('.rail-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      document.querySelectorAll('.drawer-content').forEach(el => el.style.display = 'none');
+      
+      const target = document.getElementById('section-' + sectionId);
+      if (target) {
+        target.style.display = 'block';
+      } else {
+        // Fallback for placeholder sections
+        document.getElementById('section-symbols').style.display = 'block';
+      }
+    }
+
+    // SEARCH FILTER
+    function filterCards() {
+      const query = document.getElementById('symbolSearch').value.toLowerCase();
+      const cards = document.querySelectorAll('.symbol-grid .tactical-card');
+      let visible = 0;
+      cards.forEach(card => {
+        const name = card.getAttribute('data-name').toLowerCase();
+        if (name.includes(query)) {
+          card.style.display = 'flex';
+          visible++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      document.getElementById('symbol-counter').innerText = visible + ' Units';
+    }
+
+    // CATEGORY PILL FILTER
+    function filterCategory(cat, pill) {
+      document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+
+      const cards = document.querySelectorAll('.symbol-grid .tactical-card');
+      let visible = 0;
+      cards.forEach(card => {
+        if (cat === 'all' || card.getAttribute('data-category') === cat) {
+          card.style.display = 'flex';
+          visible++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      document.getElementById('symbol-counter').innerText = visible + ' Units';
+    }
+
+    // CARD SELECTOR
+    function selectCard(card, name) {
+      document.querySelectorAll('.tactical-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+      document.getElementById('active-tool-name').innerText = name;
+    }
+
+    // TOGGLE TILE
+    function toggleTile(tile) {
+      tile.classList.toggle('active');
+    }
+  </script>
+</body>
+</html>
